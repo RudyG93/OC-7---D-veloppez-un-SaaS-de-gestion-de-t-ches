@@ -1,4 +1,4 @@
-export default interface User {
+export interface User {
   id: string;
   email: string;
   name: string;
@@ -11,8 +11,8 @@ export interface Project {
   name: string;
   description?: string;
   ownerId: string;
-  owner: User[];
-  members: [ProjectMember[]];
+  owner: User;
+  members: ProjectMember[];
   createdAt: string;
   updatedAt: string;
 }
@@ -20,7 +20,7 @@ export interface Project {
 export interface ProjectMember {
   id: string;
   role: string;
-  user: User[];
+  user: User;
   joinedAt: string;
 }
 
@@ -34,7 +34,7 @@ export interface Task {
   projectId: string;
   creatorId: Project;
   assignee?: User;
-  comments?: [Comment[]];
+  comments?: Comment[];
   createdAt: string;
   updatedAt: string;
 }
@@ -43,7 +43,7 @@ export interface TaskAssignee {
   id: string;
   userId: string;
   taskId: string;
-  user: User[];
+  user: User;
   assignedAt: string;
 }
 
@@ -52,7 +52,7 @@ export interface Comment {
   content: string;
   taskId: string;
   authorId: string;
-  author: User[];
+  author: User;
   createdAt: string;
   updatedAt: string;
 }
