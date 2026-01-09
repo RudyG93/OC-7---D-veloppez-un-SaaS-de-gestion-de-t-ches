@@ -2,18 +2,20 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { useLoginMutation } from '@/hooks/useAuth';
-import { validateLoginForm, ValidationError } from '@/lib/validation';
+import { useRegisterMutation } from '@/hooks/useAuth';
+import { validateRegisterForm, ValidationError } from '@/lib/validation';
 import FormInput from '@/components/ui/FormInput';
 import LoadingButton from '@/components/ui/LoadingButton';
 import Alert from '@/components/ui/Alert';
 
-export default function LoginForm() {
+export default function RegisterForm() {
+    const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
     const [errors, setErrors] = useState<ValidationError[]>([]);
 
-    const loginMutation = useLoginMutation();
+    const registerMutation = useRegisterMutation();
 
     const getFieldError = (field: string) =>
         errors.find((e) => e.field === field)?.message;
@@ -22,32 +24,51 @@ export default function LoginForm() {
         e.preventDefault();
         setErrors([]);
 
-        const validationErrors = validateLoginForm(email, password);
+        const validationErrors = validateRegisterForm(
+            email,
+            password,
+            confirmPassword,
+            name
+        );
         if (validationErrors.length > 0) {
             setErrors(validationErrors);
             return;
         }
 
-        loginMutation.mutate({ email, password });
+        registerMutation.mutate({
+            email,
+            password,
+            name: name.trim() || undefined,
+        });
     };
 
     return (
         <div className="card w-full max-w-md bg-base-100 shadow-xl">
             <div className="card-body">
                 <h2 className="card-title text-2xl font-bold justify-center mb-4">
-                    Connexion
+                    Créer un compte
                 </h2>
 
-                {loginMutation.isError && (
+                {registerMutation.isError && (
                     <Alert
                         type="error"
                         message={
-                            loginMutation.error?.message || 'Une erreur est survenue'
+                            registerMutation.error?.message || 'Une erreur est survenue'
                         }
                     />
                 )}
 
                 <form onSubmit={handleSubmit} className="space-y-4">
+                    <FormInput
+                        label="Nom"
+                        name="name"
+                        type="text"
+                        placeholder="Jean Dupont"
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                        error={getFieldError('name')}
+                    />
+
                     <FormInput
                         label="Email"
                         name="email"
@@ -70,17 +91,35 @@ export default function LoginForm() {
                         required
                     />
 
-                    <LoadingButton type="submit" isLoading={loginMutation.isPending}>
-                        Se connecter
+                    <p className="text-xs text-base-content/60 -mt-2">
+                        Minimum 8 caractères, une majuscule, une minuscule et un chiffre
+                    </p>
+
+                    <FormInput
+                        label="Confirmer le mot de passe"
+                        name="confirmPassword"
+                        type="password"
+                        placeholder="••••••••"
+                        value={confirmPassword}
+                        onChange={(e) => setConfirmPassword(e.target.value)}
+                        error={getFieldError('confirmPassword')}
+                        required
+                    />
+
+                    <LoadingButton
+                        type="submit"
+                        isLoading={registerMutation.isPending}
+                    >
+                        Créer mon compte
                     </LoadingButton>
                 </form>
 
                 <div className="divider">OU</div>
 
                 <p className="text-center text-sm">
-                    Pas encore de compte ?{' '}
-                    <Link href="/register" className="link link-primary font-medium">
-                        Créer un compte
+                    Déjà un compte ?{' '}
+                    <Link href="/login" className="link link-primary font-medium">
+                        Se connecter
                     </Link>
                 </p>
             </div>
