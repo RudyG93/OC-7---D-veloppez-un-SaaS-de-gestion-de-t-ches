@@ -1,11 +1,11 @@
 import { User }  from "@/types/type";
 
-export type LoginCredentials = {
+export interface LoginCredentials {
     email: string;
     password: string;
 };
 
-export type LoginResponse = {
+export interface LoginResponse {
     success: boolean;
     message: string;
     data: {
@@ -13,3 +13,18 @@ export type LoginResponse = {
         user: User;
     };
 };
+
+export interface RegisterRequest {
+  email: string;
+  password: string;
+  name?: string;
+}
+
+export interface ApiResponse<T = never> {
+  success: boolean;
+  message: string;
+  data?: T;
+  error?: string;
+  token?: string;
+  details?: never;
+}

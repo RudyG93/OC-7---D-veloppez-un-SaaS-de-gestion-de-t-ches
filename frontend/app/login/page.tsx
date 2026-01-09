@@ -1,4 +1,5 @@
 import { Metadata } from "next";
+import LoginForm from "@/features/LoginForm";
 
 export const metadata: Metadata = {
   title: "Login",
@@ -12,6 +13,7 @@ export default function LoginPage() {
         <h1>Login</h1>
         <p>Bienvenue sur votre page de connexion.</p>
       </div>
+      <LoginForm />
     </>
   );
 }
