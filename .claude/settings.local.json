@@ -3,7 +3,11 @@
     "allow": [
       "Bash(dir /s \"C:\\\\Users\\\\tsush\\\\.claude-worktrees\\\\Projet 7 bis\\\\great-stonebraker\\\\frontend\\\\src\")",
       "Bash(npm install:*)",
-      "Bash(npm run build:*)"
+      "Bash(npm run build:*)",
+      "Bash(npx ts-node:*)",
+      "Bash(npx prisma generate:*)",
+      "Bash(npx prisma db push:*)",
+      "Bash(ls:*)"
     ]
   }
 }

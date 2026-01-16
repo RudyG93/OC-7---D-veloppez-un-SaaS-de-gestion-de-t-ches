@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Inter, Manrope } from "next/font/google";
 import "./globals.css";
-import TanStackProvider from "@/providers/TanStackProvider";
 
 const inter = Inter({
   variable: "--font-body",
@@ -27,7 +26,7 @@ export default function RootLayout({
   return (
     <html lang="fr">
       <body className={`${inter.variable} ${manrope.variable} antialiased`}>
-        <TanStackProvider>{children}</TanStackProvider>
+        {children}
       </body>
     </html>
   );

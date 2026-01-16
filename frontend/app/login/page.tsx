@@ -1,22 +1,43 @@
 import { Metadata } from "next";
-import LoginForm from "@/features/LoginForm";
+import Image from "next/image";
+import LoginForm from "@/components/auth/LoginForm";
 
 export const metadata: Metadata = {
-    title: "Connexion - TaskFlow",
-    description: "Connectez-vous à votre compte TaskFlow",
+    title: "Connexion - Abricot",
+    description: "Connectez-vous à votre compte Abricot",
 };
 
 export default function LoginPage() {
     return (
-        <main className="min-h-screen flex items-center justify-center bg-base-200 px-4">
-            <div className="w-full max-w-md">
-                <div className="text-center mb-8">
-                    <h1 className="text-4xl font-bold text-primary">TaskFlow</h1>
-                    <p className="text-base-content/60 mt-2">
-                        Gestion de projet collaborative
-                    </p>
+        <main className="min-h-screen flex">
+            {/* Partie gauche - Formulaire */}
+            <div className="w-full lg:w-1/2 flex flex-col justify-center px-8 lg:px-16 xl:px-24 bg-white">
+                <div className="max-w-md mx-auto w-full">
+                    {/* Logo */}
+                    <div className="mb-16">
+                        <Image
+                            src="/logo-orange.png"
+                            alt="Abricot"
+                            width={200}
+                            height={50}
+                            priority
+                        />
+                    </div>
+
+                    {/* Formulaire */}
+                    <LoginForm />
                 </div>
-                <LoginForm />
+            </div>
+
+            {/* Partie droite - Image */}
+            <div className="hidden lg:block lg:w-1/2 relative">
+                <Image
+                    src="/login.jpg"
+                    alt="Bureau avec fournitures"
+                    fill
+                    className="object-cover"
+                    priority
+                />
             </div>
         </main>
     );
