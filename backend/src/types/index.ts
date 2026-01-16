@@ -105,6 +105,7 @@ export interface ValidationError {
 
 // Types pour les rôles et permissions
 export enum Role {
+  OWNER = "OWNER",
   ADMIN = "ADMIN",
   CONTRIBUTOR = "CONTRIBUTOR",
 }

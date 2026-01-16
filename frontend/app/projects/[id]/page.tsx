@@ -366,6 +366,7 @@ export default function ProjectDetailPage() {
                 <TaskProject
                   key={task.id}
                   task={task}
+                  projectId={projectId}
                   isExpanded={expandedTaskId === task.id}
                   onToggle={() =>
                     setExpandedTaskId(
@@ -390,6 +391,7 @@ export default function ProjectDetailPage() {
       {showTaskModal && (
         <CreateTaskModal
           projectId={projectId}
+          project={project}
           onClose={() => setShowTaskModal(false)}
         />
       )}
@@ -398,6 +400,7 @@ export default function ProjectDetailPage() {
         <EditTaskModal
           task={selectedTask}
           projectId={projectId}
+          project={project}
           onClose={() => setSelectedTask(null)}
         />
       )}

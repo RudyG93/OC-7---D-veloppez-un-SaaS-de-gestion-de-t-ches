@@ -5,9 +5,11 @@ import type { Task, TaskStatus, ProjectRole } from '@/types';
 import StatusTag from '@/components/tasks/StatusTag';
 import { canDeleteTask, canEditTask } from '@/lib/permissions';
 import { getInitials } from '@/lib/utils';
+import { useComments, useCreateComment } from '@/hooks/useComments';
 
 interface TaskProjectProps {
   task: Task;
+  projectId: string;
   isExpanded: boolean;
   onToggle: () => void;
   onStatusChange: (task: Task, status: TaskStatus) => void;
@@ -19,6 +21,7 @@ interface TaskProjectProps {
 
 export default function TaskProject({
   task,
+  projectId,
   isExpanded,
   onToggle,
   onStatusChange,
@@ -28,6 +31,15 @@ export default function TaskProject({
   userId,
 }: TaskProjectProps) {
   const [showMenu, setShowMenu] = useState(false);
+  const [newComment, setNewComment] = useState('');
+  const [commentError, setCommentError] = useState<string | null>(null);
+
+  // Charger les commentaires seulement quand la section est étendue
+  const { comments, isLoading: commentsLoading, refetch: refetchComments } = useComments(
+    isExpanded ? projectId : '',
+    isExpanded ? task.id : ''
+  );
+  const { createComment, isLoading: isCreating } = useCreateComment();
 
   // Vérifier les permissions pour cette tâche
   const canEdit = canEditTask(userRole);
@@ -38,6 +50,39 @@ export default function TaskProject({
       day: 'numeric',
       month: 'long',
     });
+  };
+
+  const formatCommentDate = (dateString: string) => {
+    const date = new Date(dateString);
+    const now = new Date();
+    const diff = now.getTime() - date.getTime();
+    const minutes = Math.floor(diff / 60000);
+    const hours = Math.floor(diff / 3600000);
+    const days = Math.floor(diff / 86400000);
+
+    if (minutes < 1) return "À l'instant";
+    if (minutes < 60) return `Il y a ${minutes} min`;
+    if (hours < 24) return `Il y a ${hours}h`;
+    if (days < 7) return `Il y a ${days}j`;
+
+    return date.toLocaleDateString('fr-FR', {
+      day: 'numeric',
+      month: 'short',
+    });
+  };
+
+  const handleSubmitComment = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newComment.trim()) return;
+
+    setCommentError(null);
+    try {
+      await createComment(projectId, task.id, { content: newComment.trim() });
+      setNewComment('');
+      refetchComments();
+    } catch (err) {
+      setCommentError(err instanceof Error ? err.message : "Erreur lors de l'envoi");
+    }
   };
 
   return (
@@ -121,6 +166,71 @@ export default function TaskProject({
               />
             </svg>
           </button>
+
+          {/* Section commentaires étendue */}
+          {isExpanded && (
+            <div className="mt-4 border-t border-gray-100 pt-4">
+              {/* Liste des commentaires */}
+              {commentsLoading ? (
+                <div className="flex items-center justify-center py-4">
+                  <span className="loading loading-spinner loading-sm text-gray-400"></span>
+                </div>
+              ) : comments.length === 0 ? (
+                <p className="text-sm text-gray-400 italic py-2">
+                  Aucun commentaire pour le moment
+                </p>
+              ) : (
+                <div className="space-y-3 mb-4">
+                  {comments.map((comment) => (
+                    <div key={comment.id} className="flex gap-3">
+                      <div className="w-8 h-8 rounded-full bg-gray-200 flex-shrink-0 flex items-center justify-center text-xs font-medium text-gray-700">
+                        {getInitials(comment.author.name || '', comment.author.email)}
+                      </div>
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2">
+                          <span className="text-sm font-medium text-gray-900">
+                            {comment.author.name || comment.author.email.split('@')[0]}
+                          </span>
+                          <span className="text-xs text-gray-400">
+                            {formatCommentDate(comment.createdAt)}
+                          </span>
+                        </div>
+                        <p className="text-sm text-gray-600 mt-0.5">
+                          {comment.content}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* Formulaire de nouveau commentaire */}
+              <form onSubmit={handleSubmitComment} className="flex gap-2">
+                <input
+                  type="text"
+                  value={newComment}
+                  onChange={(e) => setNewComment(e.target.value)}
+                  placeholder="Ajouter un commentaire..."
+                  className="flex-1 px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#D3590B] focus:border-transparent"
+                />
+                <button
+                  type="submit"
+                  disabled={isCreating || !newComment.trim()}
+                  className="px-4 py-2 bg-[#D3590B] text-white text-sm font-medium rounded-lg hover:bg-[#B84D0A] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {isCreating ? (
+                    <span className="loading loading-spinner loading-xs"></span>
+                  ) : (
+                    'Envoyer'
+                  )}
+                </button>
+              </form>
+
+              {commentError && (
+                <p className="text-sm text-red-500 mt-2">{commentError}</p>
+              )}
+            </div>
+          )}
         </div>
 
         {/* Menu actions */}

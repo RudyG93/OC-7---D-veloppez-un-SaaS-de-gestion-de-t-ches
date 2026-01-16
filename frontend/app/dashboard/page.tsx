@@ -22,7 +22,7 @@ export default function DashboardPage() {
 
     const { user } = useProfile();
     const { tasks: assignedTasks, isLoading: tasksLoading, error: tasksError } = useAssignedTasks();
-    const { projects: projectsWithTasks, isLoading: projectsLoading, error: projectsError } =
+    const { isLoading: projectsLoading, error: projectsError } =
         useProjectsWithTasks();
 
     // Erreur combinée
@@ -183,42 +183,16 @@ export default function DashboardPage() {
 
                         {view === 'kanban' && (
                             <div>
-                                <div className="flex items-center justify-between mb-4">
-                                    <div>
-                                        <h2 className="text-lg font-semibold text-gray-900">
-                                            Mes tâches
-                                        </h2>
-                                        <p className="text-sm text-gray-500">
-                                            Vue Kanban par statut
-                                        </p>
-                                    </div>
-
-                                    {/* Recherche */}
-                                    <div className="relative">
-                                        <input
-                                            type="text"
-                                            placeholder="Rechercher une tâche"
-                                            value={searchQuery}
-                                            onChange={(e) => setSearchQuery(e.target.value)}
-                                            className="w-64 pl-10 pr-4 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#E65C00] focus:border-transparent"
-                                        />
-                                        <svg
-                                            className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400"
-                                            fill="none"
-                                            stroke="currentColor"
-                                            viewBox="0 0 24 24"
-                                        >
-                                            <path
-                                                strokeLinecap="round"
-                                                strokeLinejoin="round"
-                                                strokeWidth={2}
-                                                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                                            />
-                                        </svg>
-                                    </div>
+                                <div className="mb-4">
+                                    <h2 className="text-lg font-semibold text-gray-900">
+                                        Mes tâches
+                                    </h2>
+                                    <p className="text-sm text-gray-500">
+                                        Vue Kanban par statut
+                                    </p>
                                 </div>
 
-                                <KanbanBoard tasks={filteredTasks} onTaskClick={handleTaskClick} />
+                                <KanbanBoard tasks={sortedTasks} onTaskClick={handleTaskClick} />
                             </div>
                         )}
                     </>

@@ -5,6 +5,11 @@ const prisma = new PrismaClient();
 
 /**
  * Vérifie si un utilisateur a accès à un projet
+ * Un utilisateur a accès s'il est :
+ * - Propriétaire du projet
+ * - Membre du projet (ADMIN ou CONTRIBUTOR)
+ * - Assigné à au moins une tâche du projet
+ * 
  * @param userId - ID de l'utilisateur
  * @param projectId - ID du projet
  * @returns true si l'utilisateur a accès, false sinon
@@ -23,6 +28,17 @@ export const hasProjectAccess = async (
             members: {
               some: {
                 userId: userId,
+              },
+            },
+          },
+          {
+            tasks: {
+              some: {
+                assignees: {
+                  some: {
+                    userId: userId,
+                  },
+                },
               },
             },
           },
@@ -151,6 +167,10 @@ export const canDeleteProject = async (
 
 /**
  * Récupère le rôle d'un utilisateur dans un projet
+ * - OWNER : propriétaire du projet
+ * - ADMIN : administrateur (membre avec rôle ADMIN)
+ * - CONTRIBUTOR : contributeur (membre ou assigné à une tâche)
+ * 
  * @param userId - ID de l'utilisateur
  * @param projectId - ID du projet
  * @returns Le rôle de l'utilisateur ou null s'il n'a pas accès
@@ -163,7 +183,7 @@ export const getUserProjectRole = async (
     // Vérifier si l'utilisateur est propriétaire
     const isOwner = await isProjectOwner(userId, projectId);
     if (isOwner) {
-      return Role.ADMIN;
+      return Role.OWNER;
     }
 
     // Vérifier le rôle dans les membres
@@ -174,7 +194,25 @@ export const getUserProjectRole = async (
       },
     });
 
-    return membership ? (membership.role as Role) : null;
+    if (membership) {
+      return membership.role as Role;
+    }
+
+    // Vérifier si l'utilisateur est assigné à une tâche du projet
+    const taskAssignment = await prisma.taskAssignee.findFirst({
+      where: {
+        userId: userId,
+        task: {
+          projectId: projectId,
+        },
+      },
+    });
+
+    if (taskAssignment) {
+      return Role.CONTRIBUTOR;
+    }
+
+    return null;
   } catch (error) {
     console.error("Erreur lors de la récupération du rôle:", error);
     return null;
