@@ -6,6 +6,9 @@ import Link from "next/link";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import Alert from "@/components/ui/Alert";
+import Spinner from "@/components/ui/Spinner";
+import Button from "@/components/ui/Button";
+import { AIIcon } from "@/components/ui/IconButton";
 import { useProject, useDeleteProject } from "@/hooks/useProjects";
 import { useTasks, useUpdateTask, useDeleteTask } from "@/hooks/useTasks";
 import { useProfile } from "@/hooks/useAuth";
@@ -112,7 +115,7 @@ export default function ProjectDetailPage() {
       <div className="min-h-screen flex flex-col bg-white">
         <Header />
         <main className="flex-1 flex items-center justify-center">
-          <div className="spinner spinner-lg"></div>
+          <Spinner size="lg" label="Chargement du projet" />
         </main>
         <Footer />
       </div>
@@ -209,19 +212,16 @@ export default function ProjectDetailPage() {
           </div>
           <div className="flex items-center gap-2">
             {permissions.canCreateTask && (
-              <button
+              <Button
                 onClick={() => setShowTaskModal(true)}
-                className="px-4 py-2 bg-gray-900 text-white text-sm font-medium rounded-lg hover:bg-gray-800 transition-colors"
+                variant="primary"
               >
                 Créer une tâche
-              </button>
+              </Button>
             )}
-            <button className="px-4 py-2 bg-[#D3590B] text-white text-sm font-medium rounded-lg hover:bg-[#B84D0A] transition-colors flex items-center gap-2">
-              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                <path d="M10 2a1 1 0 011 1v1.323l3.954 1.582 1.599-.8a1 1 0 01.894 1.79l-1.233.616 1.738 5.42a1 1 0 01-.285 1.05A3.989 3.989 0 0115 15a3.989 3.989 0 01-2.667-1.019 1 1 0 01-.285-1.05l1.715-5.349L11 6.477V16h2a1 1 0 110 2H7a1 1 0 110-2h2V6.477L6.237 7.582l1.715 5.349a1 1 0 01-.285 1.05A3.989 3.989 0 015 15a3.989 3.989 0 01-2.667-1.019 1 1 0 01-.285-1.05l1.738-5.42-1.233-.617a1 1 0 01.894-1.788l1.599.799L9 4.323V3a1 1 0 011-1z" />
-              </svg>
+            <Button variant="orange" leftIcon={<AIIcon />}>
               IA
-            </button>
+            </Button>
           </div>
         </div>
 

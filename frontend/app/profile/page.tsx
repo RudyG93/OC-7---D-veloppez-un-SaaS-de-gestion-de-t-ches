@@ -4,6 +4,8 @@ import { useState } from 'react';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import Alert from '@/components/ui/Alert';
+import Button from '@/components/ui/Button';
+import Spinner from '@/components/ui/Spinner';
 import { useProfile, useUpdateProfile } from '@/hooks/useAuth';
 
 export default function ProfilePage() {
@@ -95,7 +97,7 @@ export default function ProfilePage() {
             <div className="min-h-screen flex flex-col bg-white">
                 <Header />
                 <main className="flex-1 flex items-center justify-center">
-                    <div className="spinner spinner-lg"></div>
+                    <Spinner size="lg" label="Chargement du profil" />
                 </main>
                 <Footer />
             </div>
@@ -219,20 +221,20 @@ export default function ProfilePage() {
 
                         {/* Bouton */}
                         <div className="pt-4">
-                            <button
+                            <Button
                                 type="submit"
-                                disabled={isUpdating}
-                                className="px-6 py-3 bg-gray-900 text-white text-sm font-medium rounded-lg hover:bg-gray-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                variant="primary"
+                                isLoading={isUpdating}
                             >
                                 {isUpdating ? (
                                     <span className="flex items-center gap-2">
-                                        <div className="spinner spinner-sm" style={{ borderTopColor: 'white', borderColor: 'rgba(255,255,255,0.3)' }}></div>
+                                        <Spinner size="sm" color="white" label="Mise à jour en cours" />
                                         Mise à jour...
                                     </span>
                                 ) : (
                                     'Modifier les informations'
                                 )}
-                            </button>
+                            </Button>
                         </div>
                     </form>
                 </div>

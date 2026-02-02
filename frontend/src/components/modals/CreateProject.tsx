@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Alert from "@/components/ui/Alert";
+import Button from "@/components/ui/Button";
 import { useCreateProject } from "@/hooks/useProjects";
 
 interface CreateProjectModalProps {
@@ -62,17 +63,28 @@ export default function CreateProjectModal({
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-xl p-6 w-full max-w-md mx-4">
+    <div
+      className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
+      role="presentation"
+      onClick={(e) => e.target === e.currentTarget && onClose()}
+    >
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="create-project-title"
+        className="bg-white rounded-xl p-6 w-full max-w-md mx-4"
+      >
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl font-bold text-gray-900">Créer un projet</h2>
+          <h2 id="create-project-title" className="text-xl font-bold text-gray-900">Créer un projet</h2>
           <button
             onClick={onClose}
-            className="p-1 text-gray-400 hover:text-gray-600 transition-colors"
+            aria-label="Fermer la modale"
+            className="p-1 text-gray-400 hover:text-gray-600 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-300 rounded"
           >
             <svg
               className="w-5 h-5"
+              aria-hidden="true"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -99,30 +111,33 @@ export default function CreateProjectModal({
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Titre */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Titre<span className="text-red-500">*</span>
+            <label htmlFor="project-title" className="block text-sm font-medium text-gray-700 mb-1">
+              Titre<span className="text-red-500" aria-hidden="true">*</span>
+              <span className="sr-only">(requis)</span>
             </label>
             <input
+              id="project-title"
               type="text"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              placeholder=""
-              className="w-full px-4 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-gray-200 focus:border-transparent"
+              required
+              aria-required="true"
+              className="w-full px-4 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#E65C00] focus:border-transparent"
               autoFocus
             />
           </div>
 
           {/* Description */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Description<span className="text-red-500">*</span>
+            <label htmlFor="project-description" className="block text-sm font-medium text-gray-700 mb-1">
+              Description
             </label>
             <input
+              id="project-description"
               type="text"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              placeholder=""
-              className="w-full px-4 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-gray-200 focus:border-transparent"
+              className="w-full px-4 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#E65C00] focus:border-transparent"
             />
           </div>
 
@@ -216,13 +231,13 @@ export default function CreateProjectModal({
 
           {/* Bouton */}
           <div className="pt-4">
-            <button
+            <Button
               type="submit"
-              disabled={isCreating}
-              className="px-6 py-2.5 bg-gray-200 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-300 transition-colors disabled:opacity-50"
+              variant="secondary"
+              isLoading={isCreating}
             >
               {isCreating ? "Création..." : "Ajouter un projet"}
-            </button>
+            </Button>
           </div>
         </form>
       </div>

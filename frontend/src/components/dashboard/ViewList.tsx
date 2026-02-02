@@ -40,7 +40,11 @@ export default function TaskList({
                 {/* Recherche */}
                 {showSearch && (
                     <div className="relative">
+                        <label htmlFor="task-search" className="sr-only">
+                            Rechercher une tâche
+                        </label>
                         <input
+                            id="task-search"
                             type="text"
                             placeholder="Rechercher une tâche"
                             value={searchValue}
@@ -49,6 +53,7 @@ export default function TaskList({
                         />
                         <svg
                             className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400"
+                            aria-hidden="true"
                             fill="none"
                             stroke="currentColor"
                             viewBox="0 0 24 24"
@@ -69,6 +74,7 @@ export default function TaskList({
                 <div className="text-center py-12 text-gray-500">
                     <svg
                         className="w-12 h-12 mx-auto mb-4 text-gray-300"
+                        aria-hidden="true"
                         fill="none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"

@@ -1,7 +1,9 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import Alert from '@/components/ui/Alert';
+import Avatar from '@/components/ui/Avatar';
+import Button from '@/components/ui/Button';
 import { useUpdateTask } from '@/hooks/useTasks';
 import { searchUsersApi } from '@/api/users';
 import type { Task, TaskStatus, User } from '@/types';
@@ -28,6 +30,22 @@ export default function EditTaskModal({ task, projectId, onClose, onSuccess }: E
     const [error, setError] = useState('');
 
     const { updateTask, isLoading: isUpdating } = useUpdateTask();
+    const modalRef = useRef<HTMLDivElement>(null);
+    const firstInputRef = useRef<HTMLInputElement>(null);
+
+    // Focus trap et gestion du clavier pour la modale
+    useEffect(() => {
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if (e.key === 'Escape') {
+                onClose();
+            }
+        };
+
+        document.addEventListener('keydown', handleKeyDown);
+        firstInputRef.current?.focus();
+
+        return () => document.removeEventListener('keydown', handleKeyDown);
+    }, [onClose]);
 
     // Rechercher des utilisateurs via l'API
     const searchUsers = useCallback(async (query: string) => {
@@ -39,7 +57,6 @@ export default function EditTaskModal({ task, projectId, onClose, onSuccess }: E
         setIsSearching(true);
         try {
             const response = await searchUsersApi(query);
-            // Filtrer les utilisateurs déjà sélectionnés
             const filteredUsers = (response.data?.users || []).filter(
                 (user) => !selectedAssignees.some((a) => a.id === user.id)
             );
@@ -82,17 +99,6 @@ export default function EditTaskModal({ task, projectId, onClose, onSuccess }: E
         return selectedAssignees.map((u) => u.name || u.email).join(', ');
     };
 
-    const getInitials = (name: string | null, email: string) => {
-        if (name) {
-            const parts = name.split(' ');
-            if (parts.length >= 2) {
-                return `${parts[0][0]}${parts[1][0]}`.toUpperCase();
-            }
-            return name.substring(0, 2).toUpperCase();
-        }
-        return email.substring(0, 2).toUpperCase();
-    };
-
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setError('');
@@ -103,13 +109,12 @@ export default function EditTaskModal({ task, projectId, onClose, onSuccess }: E
         }
 
         try {
-            // Convertir la date au format ISO si elle est définie
             let formattedDueDate: string | null | undefined = undefined;
             if (dueDate) {
                 const date = new Date(dueDate);
                 formattedDueDate = date.toISOString();
             } else if (dueDate === '') {
-                formattedDueDate = null; // Supprimer la date
+                formattedDueDate = null;
             }
 
             await updateTask(projectId, task.id, {
@@ -130,16 +135,29 @@ export default function EditTaskModal({ task, projectId, onClose, onSuccess }: E
     };
 
     return (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-            <div className="bg-white rounded-xl p-6 w-full max-w-md mx-4 max-h-[90vh] overflow-y-auto">
+        <div
+            className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
+            role="presentation"
+            onClick={(e) => e.target === e.currentTarget && onClose()}
+        >
+            <div
+                ref={modalRef}
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="edit-task-title"
+                className="bg-white rounded-xl p-6 w-full max-w-md mx-4 max-h-[90vh] overflow-y-auto"
+            >
                 {/* Header */}
                 <div className="flex items-center justify-between mb-6">
-                    <h2 className="text-xl font-bold text-gray-900">Modifier</h2>
+                    <h2 id="edit-task-title" className="text-xl font-bold text-gray-900">
+                        Modifier la tâche
+                    </h2>
                     <button
                         onClick={onClose}
-                        className="p-1 text-gray-400 hover:text-gray-600 transition-colors"
+                        aria-label="Fermer la modale"
+                        className="p-1 text-gray-400 hover:text-gray-600 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-300 rounded"
                     >
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg className="w-5 h-5" aria-hidden="true" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                         </svg>
                     </button>
@@ -157,60 +175,69 @@ export default function EditTaskModal({ task, projectId, onClose, onSuccess }: E
                 <form onSubmit={handleSubmit} className="space-y-4">
                     {/* Titre */}
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                            Titre
+                        <label htmlFor="edit-task-title-input" className="block text-sm font-medium text-gray-700 mb-1">
+                            Titre<span className="text-red-500" aria-hidden="true">*</span>
+                            <span className="sr-only">(requis)</span>
                         </label>
                         <input
+                            ref={firstInputRef}
+                            id="edit-task-title-input"
                             type="text"
                             value={title}
                             onChange={(e) => setTitle(e.target.value)}
-                            className="w-full px-4 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-gray-200 focus:border-transparent"
+                            required
+                            aria-required="true"
+                            className="w-full px-4 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#E65C00] focus:border-transparent"
                         />
                     </div>
 
                     {/* Description */}
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                        <label htmlFor="edit-task-description" className="block text-sm font-medium text-gray-700 mb-1">
                             Description
                         </label>
                         <textarea
+                            id="edit-task-description"
                             value={description}
                             onChange={(e) => setDescription(e.target.value)}
                             rows={3}
-                            className="w-full px-4 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-gray-200 focus:border-transparent resize-none"
+                            className="w-full px-4 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#E65C00] focus:border-transparent resize-none"
                         />
                     </div>
 
                     {/* Échéance */}
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                        <label htmlFor="edit-task-due-date" className="block text-sm font-medium text-gray-700 mb-1">
                             Échéance
                         </label>
-                        <div className="relative">
-                            <input
-                                type="date"
-                                value={dueDate}
-                                onChange={(e) => setDueDate(e.target.value)}
-                                className="w-full px-4 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-gray-200 focus:border-transparent"
-                            />
-                        </div>
+                        <input
+                            id="edit-task-due-date"
+                            type="date"
+                            value={dueDate}
+                            onChange={(e) => setDueDate(e.target.value)}
+                            className="w-full px-4 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#E65C00] focus:border-transparent"
+                        />
                     </div>
 
                     {/* Assigné à */}
                     <div className="relative">
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                        <label id="edit-assignee-label" className="block text-sm font-medium text-gray-700 mb-1">
                             Assigné à :
                         </label>
                         <button
                             type="button"
                             onClick={() => setShowAssigneeDropdown(!showAssigneeDropdown)}
-                            className="w-full px-4 py-2 border border-gray-200 rounded-lg text-sm text-left flex items-center justify-between bg-white hover:bg-gray-50 transition-colors"
+                            aria-expanded={showAssigneeDropdown}
+                            aria-haspopup="listbox"
+                            aria-labelledby="edit-assignee-label"
+                            className="w-full px-4 py-2 border border-gray-200 rounded-lg text-sm text-left flex items-center justify-between bg-white hover:bg-gray-50 transition-colors focus:outline-none focus:ring-2 focus:ring-[#E65C00]"
                         >
                             <span className={selectedAssignees.length > 0 ? 'text-gray-900 truncate' : 'text-gray-500'}>
                                 {getSelectedAssigneesDisplay()}
                             </span>
                             <svg
-                                className={`w-4 h-4 text-gray-400 transition-transform flex-shrink-0 ${showAssigneeDropdown ? 'rotate-180' : ''}`}
+                                className={`w-4 h-4 text-gray-400 transition-transform shrink-0 ${showAssigneeDropdown ? 'rotate-180' : ''}`}
+                                aria-hidden="true"
                                 fill="none"
                                 stroke="currentColor"
                                 viewBox="0 0 24 24"
@@ -221,15 +248,23 @@ export default function EditTaskModal({ task, projectId, onClose, onSuccess }: E
 
                         {/* Dropdown des assignés */}
                         {showAssigneeDropdown && (
-                            <div className="absolute z-10 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg">
+                            <div
+                                role="listbox"
+                                aria-label="Liste des collaborateurs"
+                                className="absolute z-10 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg"
+                            >
                                 {/* Recherche */}
                                 <div className="p-2 border-b border-gray-100">
+                                    <label htmlFor="edit-assignee-search" className="sr-only">
+                                        Rechercher des collaborateurs
+                                    </label>
                                     <input
+                                        id="edit-assignee-search"
                                         type="text"
                                         placeholder="Rechercher par nom ou email..."
                                         value={assigneeSearch}
                                         onChange={(e) => setAssigneeSearch(e.target.value)}
-                                        className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-gray-200"
+                                        className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#E65C00]"
                                         autoFocus
                                     />
                                 </div>
@@ -248,9 +283,10 @@ export default function EditTaskModal({ task, projectId, onClose, onSuccess }: E
                                                     <button
                                                         type="button"
                                                         onClick={() => handleRemoveAssignee(user.id)}
-                                                        className="text-gray-400 hover:text-red-500"
+                                                        aria-label={`Retirer ${user.name || user.email}`}
+                                                        className="text-gray-400 hover:text-red-500 focus:outline-none focus:text-red-500"
                                                     >
-                                                        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <svg className="w-3 h-3" aria-hidden="true" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                                                         </svg>
                                                     </button>
@@ -263,7 +299,7 @@ export default function EditTaskModal({ task, projectId, onClose, onSuccess }: E
                                 {/* Résultats de recherche */}
                                 <div className="max-h-40 overflow-y-auto">
                                     {isSearching ? (
-                                        <div className="p-4 text-center text-gray-500 text-sm">
+                                        <div className="p-4 text-center text-gray-500 text-sm" role="status" aria-live="polite">
                                             Recherche...
                                         </div>
                                     ) : searchResults.length === 0 ? (
@@ -273,17 +309,17 @@ export default function EditTaskModal({ task, projectId, onClose, onSuccess }: E
                                                 : 'Aucun résultat'}
                                         </div>
                                     ) : (
-                                        <div className="py-1">
+                                        <div role="group" aria-label="Résultats de recherche">
                                             {searchResults.map((user) => (
                                                 <button
                                                     key={user.id}
                                                     type="button"
+                                                    role="option"
+                                                    aria-selected="false"
                                                     onClick={() => handleAddAssignee(user)}
-                                                    className="w-full px-3 py-2 flex items-center gap-3 hover:bg-gray-50 transition-colors"
+                                                    className="w-full px-3 py-2 flex items-center gap-3 hover:bg-gray-50 transition-colors focus:outline-none focus:bg-gray-100"
                                                 >
-                                                    <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-xs font-medium text-gray-700">
-                                                        {getInitials(user.name, user.email)}
-                                                    </div>
+                                                    <Avatar name={user.name} email={user.email} size="md" />
                                                     <div className="text-left">
                                                         <p className="text-sm font-medium text-gray-900">
                                                             {user.name || user.email}
@@ -302,15 +338,17 @@ export default function EditTaskModal({ task, projectId, onClose, onSuccess }: E
                     </div>
 
                     {/* Statut */}
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <fieldset>
+                        <legend className="block text-sm font-medium text-gray-700 mb-2">
                             Statut :
-                        </label>
-                        <div className="flex gap-2">
+                        </legend>
+                        <div className="flex gap-2" role="radiogroup" aria-label="Statut de la tâche">
                             <button
                                 type="button"
+                                role="radio"
+                                aria-checked={status === 'TODO'}
                                 onClick={() => setStatus('TODO')}
-                                className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors ${
+                                className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 ${
                                     status === 'TODO'
                                         ? 'bg-red-100 text-red-600'
                                         : 'bg-gray-100 text-gray-500 hover:bg-gray-200'
@@ -320,8 +358,10 @@ export default function EditTaskModal({ task, projectId, onClose, onSuccess }: E
                             </button>
                             <button
                                 type="button"
+                                role="radio"
+                                aria-checked={status === 'IN_PROGRESS'}
                                 onClick={() => setStatus('IN_PROGRESS')}
-                                className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors ${
+                                className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500 ${
                                     status === 'IN_PROGRESS'
                                         ? 'bg-yellow-100 text-yellow-700'
                                         : 'bg-gray-100 text-gray-500 hover:bg-gray-200'
@@ -331,8 +371,10 @@ export default function EditTaskModal({ task, projectId, onClose, onSuccess }: E
                             </button>
                             <button
                                 type="button"
+                                role="radio"
+                                aria-checked={status === 'DONE'}
                                 onClick={() => setStatus('DONE')}
-                                className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors ${
+                                className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 ${
                                     status === 'DONE'
                                         ? 'bg-green-100 text-green-600'
                                         : 'bg-gray-100 text-gray-500 hover:bg-gray-200'
@@ -341,17 +383,18 @@ export default function EditTaskModal({ task, projectId, onClose, onSuccess }: E
                                 Terminée
                             </button>
                         </div>
-                    </div>
+                    </fieldset>
 
                     {/* Bouton */}
                     <div className="pt-4">
-                        <button
+                        <Button
                             type="submit"
-                            disabled={isUpdating}
-                            className="w-full px-6 py-2.5 bg-gray-900 text-white text-sm font-medium rounded-lg hover:bg-gray-800 transition-colors disabled:opacity-50"
+                            variant="primary"
+                            fullWidth
+                            isLoading={isUpdating}
                         >
                             {isUpdating ? 'Enregistrement...' : 'Enregistrer'}
-                        </button>
+                        </Button>
                     </div>
                 </form>
             </div>

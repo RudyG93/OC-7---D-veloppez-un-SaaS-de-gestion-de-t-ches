@@ -2,10 +2,12 @@
 
 import { useState, useEffect, useRef } from 'react';
 import Alert from '@/components/ui/Alert';
+import Avatar from '@/components/ui/Avatar';
+import Button from '@/components/ui/Button';
 import { useUpdateProject, useAddContributor, useRemoveContributor } from '@/hooks/useProjects';
 import { useSearchUsers } from '@/hooks/useUsers';
-import type { Project, ProjectMember, User } from '@/types';
 import { getRoleLabel } from '@/lib/permissions';
+import type { Project, ProjectMember, User } from '@/types';
 
 interface EditProjectModalProps {
     project: Project;
@@ -135,28 +137,27 @@ export default function EditProjectModal({ project, onClose, onSuccess }: EditPr
         }
     };
 
-    const getInitials = (name: string | null, email: string) => {
-        if (name) {
-            const parts = name.split(' ');
-            if (parts.length >= 2) {
-                return `${parts[0][0]}${parts[1][0]}`.toUpperCase();
-            }
-            return name.substring(0, 2).toUpperCase();
-        }
-        return email.substring(0, 2).toUpperCase();
-    };
-
     return (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-            <div className="bg-white rounded-xl p-6 w-full max-w-lg mx-4 max-h-[90vh] overflow-y-auto">
+        <div
+            className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
+            role="presentation"
+            onClick={(e) => e.target === e.currentTarget && onClose()}
+        >
+            <div
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="edit-project-title"
+                className="bg-white rounded-xl p-6 w-full max-w-lg mx-4 max-h-[90vh] overflow-y-auto"
+            >
                 {/* Header */}
                 <div className="flex items-center justify-between mb-6">
-                    <h2 className="text-xl font-bold text-gray-900">Modifier un projet</h2>
+                    <h2 id="edit-project-title" className="text-xl font-bold text-gray-900">Modifier un projet</h2>
                     <button
                         onClick={onClose}
-                        className="p-1 text-gray-400 hover:text-gray-600 transition-colors"
+                        aria-label="Fermer la modale"
+                        className="p-1 text-gray-400 hover:text-gray-600 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-300 rounded"
                     >
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg className="w-5 h-5" aria-hidden="true" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                         </svg>
                     </button>
@@ -185,30 +186,33 @@ export default function EditProjectModal({ project, onClose, onSuccess }: EditPr
                 <form onSubmit={handleSubmit} className="space-y-4">
                     {/* Titre */}
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                            Titre<span className="text-red-500">*</span>
+                        <label htmlFor="edit-project-name" className="block text-sm font-medium text-gray-700 mb-1">
+                            Titre<span className="text-red-500" aria-hidden="true">*</span>
+                            <span className="sr-only">(requis)</span>
                         </label>
                         <input
+                            id="edit-project-name"
                             type="text"
                             value={title}
                             onChange={(e) => setTitle(e.target.value)}
-                            placeholder="Nom du projet"
-                            className="w-full px-4 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-gray-200 focus:border-transparent"
+                            required
+                            aria-required="true"
+                            className="w-full px-4 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#E65C00] focus:border-transparent"
                             autoFocus
                         />
                     </div>
 
                     {/* Description */}
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                        <label htmlFor="edit-project-description" className="block text-sm font-medium text-gray-700 mb-1">
                             Description
                         </label>
                         <textarea
+                            id="edit-project-description"
                             value={description}
                             onChange={(e) => setDescription(e.target.value)}
-                            placeholder="Description du projet"
                             rows={3}
-                            className="w-full px-4 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-gray-200 focus:border-transparent resize-none"
+                            className="w-full px-4 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#E65C00] focus:border-transparent resize-none"
                         />
                     </div>
 
@@ -252,9 +256,12 @@ export default function EditProjectModal({ project, onClose, onSuccess }: EditPr
                                 {/* Administrateur (Owner) */}
                                 <div className="flex items-center justify-between p-2 bg-gray-50 rounded-lg">
                                     <div className="flex items-center gap-3">
-                                        <div className="w-8 h-8 rounded-full bg-[#D3590B] flex items-center justify-center text-xs font-medium text-white">
-                                            {getInitials(project.owner.name, project.owner.email)}
-                                        </div>
+                                        <Avatar
+                                            name={project.owner.name}
+                                            email={project.owner.email}
+                                            size="md"
+                                            variant="orange"
+                                        />
                                         <div>
                                             <p className="text-sm font-medium text-gray-900">
                                                 {project.owner.name || project.owner.email}
@@ -276,9 +283,11 @@ export default function EditProjectModal({ project, onClose, onSuccess }: EditPr
                                                 className="flex items-center justify-between p-2 bg-white border border-gray-100 rounded-lg"
                                             >
                                                 <div className="flex items-center gap-3">
-                                                    <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-xs font-medium text-gray-700">
-                                                        {getInitials(member.user.name, member.user.email)}
-                                                    </div>
+                                                    <Avatar
+                                                        name={member.user.name}
+                                                        email={member.user.email}
+                                                        size="md"
+                                                    />
                                                     <div>
                                                         <p className="text-sm font-medium text-gray-900">
                                                             {member.user.name || member.user.email}
@@ -342,9 +351,11 @@ export default function EditProjectModal({ project, onClose, onSuccess }: EditPr
                                                                 onClick={() => handleSelectUser(user)}
                                                                 className="w-full px-3 py-2 flex items-center gap-3 hover:bg-gray-50 transition-colors text-left"
                                                             >
-                                                                <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-xs font-medium text-gray-700">
-                                                                    {getInitials(user.name, user.email)}
-                                                                </div>
+                                                                <Avatar
+                                                                    name={user.name}
+                                                                    email={user.email}
+                                                                    size="md"
+                                                                />
                                                                 <div>
                                                                     <p className="text-sm font-medium text-gray-900">
                                                                         {user.name || user.email}
@@ -360,14 +371,16 @@ export default function EditProjectModal({ project, onClose, onSuccess }: EditPr
                                             </div>
                                         )}
                                     </div>
-                                    <button
+                                    <Button
                                         type="button"
+                                        variant="secondary"
+                                        fullWidth
                                         onClick={handleAddContributor}
                                         disabled={isAdding || !selectedUser}
-                                        className="mt-2 w-full px-4 py-2 bg-gray-100 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                        className="mt-2"
                                     >
                                         {isAdding ? 'Ajout en cours...' : '+ Ajouter'}
-                                    </button>
+                                    </Button>
                                 </div>
                             </div>
                         )}
@@ -375,20 +388,22 @@ export default function EditProjectModal({ project, onClose, onSuccess }: EditPr
 
                     {/* Boutons */}
                     <div className="pt-4 flex gap-3">
-                        <button
+                        <Button
                             type="button"
+                            variant="outline"
                             onClick={onClose}
-                            className="flex-1 px-6 py-2.5 bg-white border border-gray-200 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-50 transition-colors"
+                            className="flex-1"
                         >
                             Annuler
-                        </button>
-                        <button
+                        </Button>
+                        <Button
                             type="submit"
-                            disabled={isUpdating}
-                            className="flex-1 px-6 py-2.5 bg-gray-900 text-white text-sm font-medium rounded-lg hover:bg-gray-800 transition-colors disabled:opacity-50"
+                            variant="primary"
+                            isLoading={isUpdating}
+                            className="flex-1"
                         >
                             {isUpdating ? 'Enregistrement...' : 'Enregistrer'}
-                        </button>
+                        </Button>
                     </div>
                 </form>
             </div>

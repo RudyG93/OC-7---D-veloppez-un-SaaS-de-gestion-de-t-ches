@@ -5,6 +5,9 @@ import { useRouter } from 'next/navigation';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import Alert from '@/components/ui/Alert';
+import Spinner from '@/components/ui/Spinner';
+import Button from '@/components/ui/Button';
+import { PlusIcon } from '@/components/ui/IconButton';
 import TaskList from '@/components/dashboard/ViewList';
 import KanbanBoard from '@/components/dashboard/ViewKanban';
 import { useProfile } from '@/hooks/useAuth';
@@ -80,25 +83,13 @@ export default function DashboardPage() {
                         </p>
                     </div>
 
-                    <button
+                    <Button
                         onClick={() => setShowCreateModal(true)}
-                        className="flex items-center gap-2 px-4 py-2 bg-gray-900 text-white text-sm font-medium rounded-lg hover:bg-gray-800 transition-colors"
+                        variant="primary"
+                        leftIcon={<PlusIcon />}
                     >
-                        <svg
-                            className="w-4 h-4"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                        >
-                            <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M12 4v16m8-8H4"
-                            />
-                        </svg>
                         Créer un projet
-                    </button>
+                    </Button>
                 </div>
 
                 {/* Message d'erreur */}
@@ -164,7 +155,7 @@ export default function DashboardPage() {
                 {/* Contenu selon la vue */}
                 {isLoading ? (
                     <div className="flex items-center justify-center py-20">
-                        <div className="spinner spinner-lg"></div>
+                        <Spinner size="lg" label="Chargement des tâches" />
                     </div>
                 ) : (
                     <>

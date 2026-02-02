@@ -3,8 +3,9 @@
 import { useState } from 'react';
 import type { Task, TaskStatus, ProjectRole } from '@/types';
 import StatusTag from '@/components/tasks/StatusTag';
+import Spinner from '@/components/ui/Spinner';
+import Avatar from '@/components/ui/Avatar';
 import { canDeleteTask, canEditTask } from '@/lib/permissions';
-import { getInitials } from '@/lib/utils';
 import { useComments, useCreateComment } from '@/hooks/useComments';
 
 interface TaskProjectProps {
@@ -133,9 +134,11 @@ export default function TaskProject({
                       key={assignee.id}
                       className="flex items-center gap-1 px-2 py-0.5 bg-gray-100 rounded-full"
                     >
-                      <div className="w-5 h-5 rounded-full bg-gray-300 flex items-center justify-center text-[10px] font-medium text-gray-700">
-                        {getInitials(assignee.user.name || '', assignee.user.email)}
-                      </div>
+                      <Avatar
+                        name={assignee.user.name}
+                        email={assignee.user.email}
+                        size="xs"
+                      />
                       <span className="text-xs">
                         {assignee.user.name || assignee.user.email.split('@')[0]}
                       </span>
@@ -173,7 +176,7 @@ export default function TaskProject({
               {/* Liste des commentaires */}
               {commentsLoading ? (
                 <div className="flex items-center justify-center py-4">
-                  <div className="spinner spinner-sm"></div>
+                  <Spinner size="sm" label="Chargement des commentaires" />
                 </div>
               ) : comments.length === 0 ? (
                 <p className="text-sm text-gray-400 italic py-2">
@@ -183,9 +186,12 @@ export default function TaskProject({
                 <div className="space-y-3 mb-4">
                   {comments.map((comment) => (
                     <div key={comment.id} className="flex gap-3">
-                      <div className="w-8 h-8 rounded-full bg-gray-200 flex-shrink-0 flex items-center justify-center text-xs font-medium text-gray-700">
-                        {getInitials(comment.author.name || '', comment.author.email)}
-                      </div>
+                      <Avatar
+                        name={comment.author.name}
+                        email={comment.author.email}
+                        size="md"
+                        className="shrink-0"
+                      />
                       <div className="flex-1">
                         <div className="flex items-center gap-2">
                           <span className="text-sm font-medium text-gray-900">
@@ -219,7 +225,7 @@ export default function TaskProject({
                   className="px-4 py-2 bg-[#D3590B] text-white text-sm font-medium rounded-lg hover:bg-[#B84D0A] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {isCreating ? (
-                    <div className="spinner spinner-sm" style={{ borderTopColor: 'white', borderColor: 'rgba(255,255,255,0.3)' }}></div>
+                    <Spinner size="sm" color="white" label="Envoi du commentaire" />
                   ) : (
                     'Envoyer'
                   )}

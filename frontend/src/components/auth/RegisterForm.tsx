@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRegister } from '@/hooks/useAuth';
 import { validateRegisterForm, ValidationError } from '@/lib/validation';
 import Alert from '@/components/ui/Alert';
+import Button from '@/components/ui/Button';
 
 export default function RegisterForm() {
     const [email, setEmail] = useState('');
@@ -53,17 +54,19 @@ export default function RegisterForm() {
                 {/* Email */}
                 <div>
                     <label
-                        htmlFor="email"
+                        htmlFor="register-email"
                         className="block text-sm font-medium text-gray-900 mb-2"
                     >
                         Email
                     </label>
                     <input
-                        id="email"
+                        id="register-email"
                         name="email"
                         type="email"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
+                        aria-invalid={!!getFieldError('email')}
+                        aria-describedby={getFieldError('email') ? 'register-email-error' : undefined}
                         className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#E65C00] focus:border-transparent ${
                             getFieldError('email')
                                 ? 'border-red-500'
@@ -72,7 +75,7 @@ export default function RegisterForm() {
                         required
                     />
                     {getFieldError('email') && (
-                        <p className="mt-1 text-sm text-red-500">
+                        <p id="register-email-error" role="alert" className="mt-1 text-sm text-red-500">
                             {getFieldError('email')}
                         </p>
                     )}
@@ -81,17 +84,19 @@ export default function RegisterForm() {
                 {/* Mot de passe */}
                 <div>
                     <label
-                        htmlFor="password"
+                        htmlFor="register-password"
                         className="block text-sm font-medium text-gray-900 mb-2"
                     >
                         Mot de passe
                     </label>
                     <input
-                        id="password"
+                        id="register-password"
                         name="password"
                         type="password"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
+                        aria-invalid={!!getFieldError('password')}
+                        aria-describedby={getFieldError('password') ? 'register-password-error' : undefined}
                         className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#E65C00] focus:border-transparent ${
                             getFieldError('password')
                                 ? 'border-red-500'
@@ -100,24 +105,25 @@ export default function RegisterForm() {
                         required
                     />
                     {getFieldError('password') && (
-                        <p className="mt-1 text-sm text-red-500">
+                        <p id="register-password-error" role="alert" className="mt-1 text-sm text-red-500">
                             {getFieldError('password')}
                         </p>
                     )}
                 </div>
 
                 {/* Bouton d'inscription */}
-                <button
+                <Button
                     type="submit"
                     disabled={isLoading}
-                    className="w-full bg-gray-900 text-white py-3 px-4 rounded-full font-medium hover:bg-gray-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+                    isLoading={isLoading}
+                    loadingText=""
+                    variant="primary"
+                    fullWidth
+                    rounded
+                    size="lg"
                 >
-                    {isLoading ? (
-                        <div className="spinner spinner-sm" style={{ borderTopColor: 'white', borderColor: 'rgba(255,255,255,0.3)' }}></div>
-                    ) : (
-                        "S'inscrire"
-                    )}
-                </button>
+                    S&apos;inscrire
+                </Button>
             </form>
 
             {/* Lien vers connexion */}

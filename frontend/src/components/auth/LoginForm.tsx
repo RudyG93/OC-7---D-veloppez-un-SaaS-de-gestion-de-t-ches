@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useLogin } from '@/hooks/useAuth';
 import { validateLoginForm, ValidationError } from '@/lib/validation';
 import Alert from '@/components/ui/Alert';
+import Button from '@/components/ui/Button';
 
 export default function LoginForm() {
     const [email, setEmail] = useState('');
@@ -63,6 +64,8 @@ export default function LoginForm() {
                         type="email"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
+                        aria-invalid={!!getFieldError('email')}
+                        aria-describedby={getFieldError('email') ? 'email-error' : undefined}
                         className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#E65C00] focus:border-transparent ${
                             getFieldError('email')
                                 ? 'border-red-500'
@@ -71,7 +74,7 @@ export default function LoginForm() {
                         required
                     />
                     {getFieldError('email') && (
-                        <p className="mt-1 text-sm text-red-500">
+                        <p id="email-error" role="alert" className="mt-1 text-sm text-red-500">
                             {getFieldError('email')}
                         </p>
                     )}
@@ -91,6 +94,8 @@ export default function LoginForm() {
                         type="password"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
+                        aria-invalid={!!getFieldError('password')}
+                        aria-describedby={getFieldError('password') ? 'password-error' : undefined}
                         className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#E65C00] focus:border-transparent ${
                             getFieldError('password')
                                 ? 'border-red-500'
@@ -99,24 +104,25 @@ export default function LoginForm() {
                         required
                     />
                     {getFieldError('password') && (
-                        <p className="mt-1 text-sm text-red-500">
+                        <p id="password-error" role="alert" className="mt-1 text-sm text-red-500">
                             {getFieldError('password')}
                         </p>
                     )}
                 </div>
 
                 {/* Bouton de connexion */}
-                <button
+                <Button
                     type="submit"
                     disabled={isLoading}
-                    className="w-full bg-gray-900 text-white py-3 px-4 rounded-full font-medium hover:bg-gray-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+                    isLoading={isLoading}
+                    loadingText=""
+                    variant="primary"
+                    fullWidth
+                    rounded
+                    size="lg"
                 >
-                    {isLoading ? (
-                        <div className="spinner spinner-sm" style={{ borderTopColor: 'white', borderColor: 'rgba(255,255,255,0.3)' }}></div>
-                    ) : (
-                        'Se connecter'
-                    )}
-                </button>
+                    Se connecter
+                </Button>
 
                 {/* Mot de passe oublié */}
                 <div className="text-center">

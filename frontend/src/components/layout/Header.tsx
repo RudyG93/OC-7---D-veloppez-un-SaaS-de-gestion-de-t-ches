@@ -5,6 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { useProfile, useLogout } from '@/hooks/useAuth';
+import { getInitials } from '@/lib/utils';
 
 export default function Header() {
     const pathname = usePathname();
@@ -26,19 +27,7 @@ export default function Header() {
     }, []);
 
     // Obtenir les initiales de l'utilisateur
-    const getInitials = () => {
-        if (user?.name) {
-            const names = user.name.split(' ');
-            if (names.length >= 2) {
-                return `${names[0][0]}${names[1][0]}`.toUpperCase();
-            }
-            return user.name.substring(0, 2).toUpperCase();
-        }
-        if (user?.email) {
-            return user.email.substring(0, 2).toUpperCase();
-        }
-        return 'U';
-    };
+    const userInitials = getInitials(user?.name || '', user?.email);
 
     const isActive = (path: string) => pathname === path;
 
@@ -113,14 +102,21 @@ export default function Header() {
                         <div className="relative" ref={menuRef}>
                             <button
                                 onClick={() => setIsMenuOpen(!isMenuOpen)}
-                                className="w-10 h-10 rounded-full bg-[#D3590B] flex items-center justify-center text-sm font-semibold text-white hover:bg-[#B84D0A] transition-colors cursor-pointer"
+                                aria-expanded={isMenuOpen}
+                                aria-haspopup="true"
+                                aria-label="Menu utilisateur"
+                                className="w-10 h-10 rounded-full bg-[#D3590B] flex items-center justify-center text-sm font-semibold text-white hover:bg-[#B84D0A] transition-colors cursor-pointer focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#D3590B]"
                             >
-                                {getInitials()}
+                                {userInitials}
                             </button>
 
                             {/* Dropdown menu */}
                             {isMenuOpen && (
-                                <div className="absolute right-0 mt-2 w-52 bg-white rounded-lg shadow-lg border border-gray-100 z-50">
+                                <div
+                                    role="menu"
+                                    aria-orientation="vertical"
+                                    className="absolute right-0 mt-2 w-52 bg-white rounded-lg shadow-lg border border-gray-100 z-50"
+                                >
                                     <div className="px-4 py-3 border-b border-gray-100">
                                         <p className="font-medium text-gray-900">
                                             {user?.name || 'Utilisateur'}
@@ -132,17 +128,19 @@ export default function Header() {
                                     <div className="py-1">
                                         <Link
                                             href="/profile"
+                                            role="menuitem"
                                             onClick={() => setIsMenuOpen(false)}
-                                            className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer"
+                                            className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer focus:outline-none focus:bg-gray-100"
                                         >
                                             Mon profil
                                         </Link>
                                         <button
+                                            role="menuitem"
                                             onClick={() => {
                                                 setIsMenuOpen(false);
                                                 logout();
                                             }}
-                                            className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 cursor-pointer"
+                                            className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 cursor-pointer focus:outline-none focus:bg-red-100"
                                         >
                                             Déconnexion
                                         </button>

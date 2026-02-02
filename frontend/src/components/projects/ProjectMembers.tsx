@@ -1,5 +1,5 @@
 import { getRoleLabel } from "@/lib/permissions";
-import { getInitials } from "@/lib/utils";
+import Avatar from '@/components/ui/Avatar';
 import type { Project, ProjectRole, User } from '@/types';
 
 interface ProjectMembersProps {
@@ -21,9 +21,12 @@ export function ProjectMembers({ project, user }: ProjectMembersProps) {
         <div className="flex items-center gap-3 flex-wrap">
           {/* Connected User */}
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-full bg-gray-300 flex items-center justify-center text-xs font-medium text-gray-700">
-              {getInitials(user.name || '', user.email || '')}
-            </div>
+            <Avatar
+              name={user.name}
+              email={user.email}
+              size="md"
+              alt={user.name || user.email}
+            />
             <span className="px-3 py-1 rounded-full text-xs font-medium bg-[#FFE8D9] text-[#D3590B]">
               {getRoleLabel(project.userRole as ProjectRole)}
             </span>
@@ -32,9 +35,12 @@ export function ProjectMembers({ project, user }: ProjectMembersProps) {
           {/* Membres */}
           {project.members?.map((member) => (
             <div key={member.id} className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-full bg-gray-300 flex items-center justify-center text-xs font-medium text-gray-700">
-                {getInitials(member.user.name || '', member.user.email)}
-              </div>
+              <Avatar
+                name={member.user.name}
+                email={member.user.email}
+                size="md"
+                alt={member.user.name || member.user.email}
+              />
               <span className="text-sm text-gray-700">
                 {member.user.name || member.user.email}
               </span>

@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import type { Project, ProjectRole, User } from '@/types';
-import { getInitials } from '@/lib/utils';
+import Avatar from '@/components/ui/Avatar';
 
 interface ProjectCardProps {
     project: Project;
@@ -30,7 +30,8 @@ export default function ProjectCard({ project, user }: ProjectCardProps) {
     return (
         <Link
             href={`/projects/${project.id}`}
-            className="block bg-white border border-gray-200 rounded-xl p-6 hover:shadow-lg transition-shadow"
+            aria-label={`Projet ${project.name}, progression ${progressPercent}%, ${completedTasks} sur ${totalTasks} tâches terminées`}
+            className="block bg-white border border-gray-200 rounded-xl p-6 hover:shadow-lg transition-shadow focus:outline-none focus:ring-2 focus:ring-[#E65C00] focus:ring-offset-2"
         >
             {/* Titre */}
             <h3 className="text-lg font-bold text-gray-900 mb-2">
@@ -65,7 +66,7 @@ export default function ProjectCard({ project, user }: ProjectCardProps) {
 
             {/* Équipe */}
             <div className="flex items-center gap-2">
-                <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-4 h-4 text-gray-400" aria-hidden="true" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
                 </svg>
                 <span className="text-sm text-gray-600">
@@ -74,11 +75,16 @@ export default function ProjectCard({ project, user }: ProjectCardProps) {
             </div>
 
             {/* Membres */}
-            <div className="flex items-center gap-2 mt-3 flex-wrap">
+            <div className="flex items-center gap-2 mt-3 flex-wrap" aria-label="Membres de l'équipe">
                 {/* Utilisateur connecté */}
-                <div className="w-8 h-8 rounded-full bg-[#FFE8D9] flex items-center justify-center text-xs font-medium text-black">
-                    {getInitials(user.name || '', user.email)}
-                </div>
+                <Avatar
+                    name={user.name}
+                    email={user.email}
+                    size="md"
+                    variant="orange"
+                    className="bg-[#FFE8D9] text-black"
+                    alt={`Vous: ${user.name || user.email}`}
+                />
 
                 {/* Rôle de l'utilisateur connecté */}
                 {project.userRole && (
@@ -92,9 +98,13 @@ export default function ProjectCard({ project, user }: ProjectCardProps) {
                     ?.filter((member) => member.userId !== user.id)
                     .slice(0, 3)
                     .map((member) => (
-                        <div key={member.id} className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-xs font-medium text-gray-700">
-                            {getInitials(member.user.name || '', member.user.email)}
-                        </div>
+                        <Avatar
+                            key={member.id}
+                            name={member.user.name}
+                            email={member.user.email}
+                            size="md"
+                            alt={member.user.name || member.user.email}
+                        />
                     ))}
 
                 {/* Indicateur pour plus de membres */}
