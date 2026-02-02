@@ -3,10 +3,10 @@ import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
 /**
- * Vérifie si les utilisateurs sont membres du projet
+ * Vérifie si les utilisateurs sont membres du projet (incluant le propriétaire)
  * @param projectId - ID du projet
  * @param userIds - IDs des utilisateurs à vérifier
- * @returns true si tous les utilisateurs sont membres, false sinon
+ * @returns true si tous les utilisateurs sont membres ou propriétaire, false sinon
  */
 export const validateProjectMembers = async (
   projectId: string,
@@ -14,6 +14,15 @@ export const validateProjectMembers = async (
 ): Promise<boolean> => {
   if (userIds.length === 0) return true;
 
+  // Récupérer le projet avec son propriétaire
+  const project = await prisma.project.findUnique({
+    where: { id: projectId },
+    select: { ownerId: true },
+  });
+
+  if (!project) return false;
+
+  // Récupérer les membres du projet
   const projectMembers = await prisma.projectMember.findMany({
     where: {
       projectId,
@@ -21,7 +30,12 @@ export const validateProjectMembers = async (
     },
   });
 
-  return projectMembers.length === userIds.length;
+  // Créer un Set avec tous les IDs valides (propriétaire + membres)
+  const validUserIds = new Set<string>([project.ownerId]);
+  projectMembers.forEach((member) => validUserIds.add(member.userId));
+
+  // Vérifier que tous les userIds sont dans le Set des IDs valides
+  return userIds.every((userId) => validUserIds.has(userId));
 };
 
 /**

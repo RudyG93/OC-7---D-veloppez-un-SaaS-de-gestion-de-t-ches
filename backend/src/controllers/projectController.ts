@@ -292,6 +292,12 @@ export const getProjects = async (
             },
           },
         },
+        tasks: {
+          select: {
+            id: true,
+            status: true,
+          },
+        },
         _count: {
           select: {
             tasks: true,
@@ -745,29 +751,24 @@ export const searchUsers = async (
       return;
     }
 
-    const users = await prisma.user.findMany({
-      where: {
-        OR: [
-          {
-            email: {
-              contains: searchQuery,
-            },
-          },
-          {
-            name: {
-              contains: searchQuery,
-            },
-          },
-        ],
-      },
+    // Recherche insensible à la casse - récupérer plus de résultats et filtrer côté serveur
+    const allUsers = await prisma.user.findMany({
       select: {
         id: true,
         email: true,
         name: true,
       },
-      take: 10, // Limiter à 10 résultats
       orderBy: [{ name: "asc" }, { email: "asc" }],
     });
+
+    const searchLower = searchQuery.toLowerCase();
+    const users = allUsers
+      .filter(
+        (user) =>
+          user.email.toLowerCase().includes(searchLower) ||
+          (user.name && user.name.toLowerCase().includes(searchLower))
+      )
+      .slice(0, 10); // Limiter à 10 résultats
 
     sendSuccess(res, "Utilisateurs trouvés", { users });
   } catch (error) {

@@ -1,79 +1,82 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import Alert from '@/components/ui/Alert';
 import { useCreateTask } from '@/hooks/useTasks';
-import type { TaskStatus, Project, User, ProjectMember } from '@/types';
+import { searchUsersApi } from '@/api/users';
+import type { TaskStatus, User } from '@/types';
 
 interface CreateTaskModalProps {
     projectId: string;
-    project?: Project;
     onClose: () => void;
+    onSuccess?: () => void;
 }
 
-export default function CreateTaskModal({ projectId, project, onClose }: CreateTaskModalProps) {
+export default function CreateTaskModal({ projectId, onClose, onSuccess }: CreateTaskModalProps) {
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
     const [dueDate, setDueDate] = useState('');
     const [status, setStatus] = useState<TaskStatus>('TODO');
-    const [selectedAssignees, setSelectedAssignees] = useState<string[]>([]);
+    const [selectedAssignees, setSelectedAssignees] = useState<User[]>([]);
     const [showAssigneeDropdown, setShowAssigneeDropdown] = useState(false);
     const [assigneeSearch, setAssigneeSearch] = useState('');
+    const [searchResults, setSearchResults] = useState<User[]>([]);
+    const [isSearching, setIsSearching] = useState(false);
     const [error, setError] = useState('');
 
     const { createTask, isLoading: isCreating } = useCreateTask();
 
-    // Liste des membres du projet (owner + contributors)
-    const projectMembers = useMemo(() => {
-        if (!project) return [];
-
-        const members: { id: string; user: User }[] = [];
-
-        // Ajouter le propriétaire
-        if (project.owner) {
-            members.push({ id: project.owner.id, user: project.owner });
+    // Rechercher des utilisateurs via l'API
+    const searchUsers = useCallback(async (query: string) => {
+        if (query.length < 2) {
+            setSearchResults([]);
+            return;
         }
 
-        // Ajouter les contributeurs
-        if (project.members) {
-            project.members.forEach((member: ProjectMember) => {
-                members.push({ id: member.userId, user: member.user });
-            });
+        setIsSearching(true);
+        try {
+            const response = await searchUsersApi(query);
+            // Filtrer les utilisateurs déjà sélectionnés
+            const filteredUsers = (response.data?.users || []).filter(
+                (user) => !selectedAssignees.some((a) => a.id === user.id)
+            );
+            setSearchResults(filteredUsers);
+        } catch (err) {
+            console.error('Erreur de recherche:', err);
+            setSearchResults([]);
+        } finally {
+            setIsSearching(false);
         }
+    }, [selectedAssignees]);
 
-        return members;
-    }, [project]);
+    // Debounce la recherche
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            if (assigneeSearch) {
+                searchUsers(assigneeSearch);
+            } else {
+                setSearchResults([]);
+            }
+        }, 300);
 
-    // Filtrer les membres selon la recherche
-    const filteredMembers = useMemo(() => {
-        if (!assigneeSearch) return projectMembers;
-        const query = assigneeSearch.toLowerCase();
-        return projectMembers.filter(
-            (member) =>
-                member.user.name?.toLowerCase().includes(query) ||
-                member.user.email.toLowerCase().includes(query)
-        );
-    }, [projectMembers, assigneeSearch]);
+        return () => clearTimeout(timer);
+    }, [assigneeSearch, searchUsers]);
 
-    const handleToggleAssignee = (userId: string) => {
-        setSelectedAssignees((prev) =>
-            prev.includes(userId)
-                ? prev.filter((id) => id !== userId)
-                : [...prev, userId]
-        );
+    const handleAddAssignee = (user: User) => {
+        setSelectedAssignees((prev) => [...prev, user]);
+        setAssigneeSearch('');
+        setSearchResults([]);
+    };
+
+    const handleRemoveAssignee = (userId: string) => {
+        setSelectedAssignees((prev) => prev.filter((u) => u.id !== userId));
     };
 
     const getSelectedAssigneesDisplay = () => {
         if (selectedAssignees.length === 0) {
             return 'Choisir un ou plusieurs collaborateurs';
         }
-        const names = selectedAssignees
-            .map((id) => {
-                const member = projectMembers.find((m) => m.id === id);
-                return member?.user.name || member?.user.email || '';
-            })
-            .filter(Boolean);
-        return names.join(', ');
+        return selectedAssignees.map((u) => u.name || u.email).join(', ');
     };
 
     const getInitials = (name: string | null, email: string) => {
@@ -97,12 +100,23 @@ export default function CreateTaskModal({ projectId, project, onClose }: CreateT
         }
 
         try {
+            // Convertir la date au format ISO si elle est définie
+            let formattedDueDate: string | undefined = undefined;
+            if (dueDate) {
+                const date = new Date(dueDate);
+                formattedDueDate = date.toISOString();
+            }
+
             await createTask(projectId, {
                 title: title.trim(),
                 description: description.trim() || undefined,
-                dueDate: dueDate || undefined,
-                assigneeIds: selectedAssignees.length > 0 ? selectedAssignees : undefined,
+                dueDate: formattedDueDate,
+                status,
+                assigneeIds: selectedAssignees.length > 0 ? selectedAssignees.map((u) => u.id) : undefined,
             });
+            if (onSuccess) {
+                onSuccess();
+            }
             onClose();
         } catch (err) {
             setError(err instanceof Error ? err.message : 'Erreur lors de la création');
@@ -187,11 +201,11 @@ export default function CreateTaskModal({ projectId, project, onClose }: CreateT
                             onClick={() => setShowAssigneeDropdown(!showAssigneeDropdown)}
                             className="w-full px-4 py-2 border border-gray-200 rounded-lg text-sm text-left flex items-center justify-between bg-white hover:bg-gray-50 transition-colors"
                         >
-                            <span className={selectedAssignees.length > 0 ? 'text-gray-900' : 'text-gray-500'}>
+                            <span className={selectedAssignees.length > 0 ? 'text-gray-900 truncate' : 'text-gray-500'}>
                                 {getSelectedAssigneesDisplay()}
                             </span>
                             <svg
-                                className={`w-4 h-4 text-gray-400 transition-transform ${showAssigneeDropdown ? 'rotate-180' : ''}`}
+                                className={`w-4 h-4 text-gray-400 transition-transform flex-shrink-0 ${showAssigneeDropdown ? 'rotate-180' : ''}`}
                                 fill="none"
                                 stroke="currentColor"
                                 viewBox="0 0 24 24"
@@ -202,62 +216,82 @@ export default function CreateTaskModal({ projectId, project, onClose }: CreateT
 
                         {/* Dropdown des assignés */}
                         {showAssigneeDropdown && (
-                            <div className="absolute z-10 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-y-auto">
+                            <div className="absolute z-10 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg">
                                 {/* Recherche */}
                                 <div className="p-2 border-b border-gray-100">
                                     <input
                                         type="text"
-                                        placeholder="Rechercher par nom..."
+                                        placeholder="Rechercher par nom ou email..."
                                         value={assigneeSearch}
                                         onChange={(e) => setAssigneeSearch(e.target.value)}
                                         className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-gray-200"
+                                        autoFocus
                                     />
                                 </div>
 
-                                {/* Liste des membres */}
-                                {filteredMembers.length === 0 ? (
-                                    <div className="p-4 text-center text-gray-500 text-sm">
-                                        {projectMembers.length === 0
-                                            ? 'Aucun membre dans le projet'
-                                            : 'Aucun résultat'}
-                                    </div>
-                                ) : (
-                                    <div className="py-1">
-                                        {filteredMembers.map((member) => (
-                                            <button
-                                                key={member.id}
-                                                type="button"
-                                                onClick={() => handleToggleAssignee(member.id)}
-                                                className="w-full px-3 py-2 flex items-center gap-3 hover:bg-gray-50 transition-colors"
-                                            >
-                                                <div
-                                                    className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-colors ${
-                                                        selectedAssignees.includes(member.id)
-                                                            ? 'bg-[#D3590B] border-[#D3590B]'
-                                                            : 'border-gray-300'
-                                                    }`}
+                                {/* Assignés sélectionnés */}
+                                {selectedAssignees.length > 0 && (
+                                    <div className="p-2 border-b border-gray-100">
+                                        <p className="text-xs text-gray-500 mb-2">Sélectionnés :</p>
+                                        <div className="flex flex-wrap gap-1">
+                                            {selectedAssignees.map((user) => (
+                                                <span
+                                                    key={user.id}
+                                                    className="inline-flex items-center gap-1 px-2 py-1 bg-gray-100 rounded-full text-xs"
                                                 >
-                                                    {selectedAssignees.includes(member.id) && (
-                                                        <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                                                    {user.name || user.email}
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => handleRemoveAssignee(user.id)}
+                                                        className="text-gray-400 hover:text-red-500"
+                                                    >
+                                                        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                                                         </svg>
-                                                    )}
-                                                </div>
-                                                <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-xs font-medium text-gray-700">
-                                                    {getInitials(member.user.name, member.user.email)}
-                                                </div>
-                                                <div className="text-left">
-                                                    <p className="text-sm font-medium text-gray-900">
-                                                        {member.user.name || member.user.email}
-                                                    </p>
-                                                    {member.user.name && (
-                                                        <p className="text-xs text-gray-500">{member.user.email}</p>
-                                                    )}
-                                                </div>
-                                            </button>
-                                        ))}
+                                                    </button>
+                                                </span>
+                                            ))}
+                                        </div>
                                     </div>
                                 )}
+
+                                {/* Résultats de recherche */}
+                                <div className="max-h-40 overflow-y-auto">
+                                    {isSearching ? (
+                                        <div className="p-4 text-center text-gray-500 text-sm">
+                                            Recherche...
+                                        </div>
+                                    ) : searchResults.length === 0 ? (
+                                        <div className="p-4 text-center text-gray-500 text-sm">
+                                            {assigneeSearch.length < 2
+                                                ? 'Tapez au moins 2 caractères'
+                                                : 'Aucun résultat'}
+                                        </div>
+                                    ) : (
+                                        <div className="py-1">
+                                            {searchResults.map((user) => (
+                                                <button
+                                                    key={user.id}
+                                                    type="button"
+                                                    onClick={() => handleAddAssignee(user)}
+                                                    className="w-full px-3 py-2 flex items-center gap-3 hover:bg-gray-50 transition-colors"
+                                                >
+                                                    <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-xs font-medium text-gray-700">
+                                                        {getInitials(user.name, user.email)}
+                                                    </div>
+                                                    <div className="text-left">
+                                                        <p className="text-sm font-medium text-gray-900">
+                                                            {user.name || user.email}
+                                                        </p>
+                                                        {user.name && (
+                                                            <p className="text-xs text-gray-500">{user.email}</p>
+                                                        )}
+                                                    </div>
+                                                </button>
+                                            ))}
+                                        </div>
+                                    )}
+                                </div>
                             </div>
                         )}
                     </div>

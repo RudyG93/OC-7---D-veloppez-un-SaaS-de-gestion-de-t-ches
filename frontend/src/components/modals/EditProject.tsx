@@ -1,9 +1,10 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Alert from '@/components/ui/Alert';
 import { useUpdateProject, useAddContributor, useRemoveContributor } from '@/hooks/useProjects';
-import type { Project, ProjectMember } from '@/types';
+import { useSearchUsers } from '@/hooks/useUsers';
+import type { Project, ProjectMember, User } from '@/types';
 import { getRoleLabel } from '@/lib/permissions';
 
 interface EditProjectModalProps {
@@ -20,12 +21,52 @@ export default function EditProjectModal({ project, onClose, onSuccess }: EditPr
 
     // Gestion des contributeurs
     const [showContributors, setShowContributors] = useState(false);
-    const [newContributorEmail, setNewContributorEmail] = useState('');
+    const [contributorSearch, setContributorSearch] = useState('');
+    const [showUserDropdown, setShowUserDropdown] = useState(false);
+    const [selectedUser, setSelectedUser] = useState<User | null>(null);
     const [contributorError, setContributorError] = useState('');
+
+    const dropdownRef = useRef<HTMLDivElement>(null);
 
     const { updateProject, isLoading: isUpdating } = useUpdateProject();
     const { addContributor, isLoading: isAdding } = useAddContributor();
     const { removeContributor, isLoading: isRemoving } = useRemoveContributor();
+    const { searchUsers, users: searchResults, isLoading: isSearching } = useSearchUsers();
+
+    // Recherche d'utilisateurs avec debounce
+    useEffect(() => {
+        const timeoutId = setTimeout(() => {
+            if (contributorSearch.length >= 2) {
+                searchUsers(contributorSearch);
+                setShowUserDropdown(true);
+            } else {
+                setShowUserDropdown(false);
+            }
+        }, 300);
+
+        return () => clearTimeout(timeoutId);
+    }, [contributorSearch, searchUsers]);
+
+    // Fermer le dropdown si on clique en dehors
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+                setShowUserDropdown(false);
+            }
+        };
+
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, []);
+
+    // Filtrer les utilisateurs déjà membres du projet
+    const filteredResults = searchResults.filter((user) => {
+        // Exclure le propriétaire
+        if (user.id === project.ownerId) return false;
+        // Exclure les membres existants
+        if (project.members?.some((m) => m.userId === user.id)) return false;
+        return true;
+    });
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -52,20 +93,26 @@ export default function EditProjectModal({ project, onClose, onSuccess }: EditPr
         }
     };
 
+    const handleSelectUser = (user: User) => {
+        setSelectedUser(user);
+        setContributorSearch(user.name || user.email);
+        setShowUserDropdown(false);
+    };
+
     const handleAddContributor = async () => {
-        if (!newContributorEmail.trim()) {
-            setContributorError('Veuillez entrer un email');
+        if (!selectedUser) {
+            setContributorError('Veuillez sélectionner un utilisateur');
             return;
         }
 
         setContributorError('');
         try {
-            // Les nouveaux membres sont toujours des contributeurs
             await addContributor(project.id, {
-                email: newContributorEmail.trim(),
+                email: selectedUser.email,
                 role: 'CONTRIBUTOR',
             });
-            setNewContributorEmail('');
+            setContributorSearch('');
+            setSelectedUser(null);
             setSuccessMessage('Contributeur ajouté avec succès');
             if (onSuccess) {
                 onSuccess();
@@ -263,17 +310,60 @@ export default function EditProjectModal({ project, onClose, onSuccess }: EditPr
                                 {/* Ajouter un contributeur */}
                                 <div className="pt-3 border-t border-gray-200">
                                     <p className="text-sm font-medium text-gray-700 mb-2">Ajouter un contributeur</p>
-                                    <input
-                                        type="email"
-                                        value={newContributorEmail}
-                                        onChange={(e) => setNewContributorEmail(e.target.value)}
-                                        placeholder="Email du contributeur"
-                                        className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-gray-200"
-                                    />
+                                    <div className="relative" ref={dropdownRef}>
+                                        <input
+                                            type="text"
+                                            value={contributorSearch}
+                                            onChange={(e) => {
+                                                setContributorSearch(e.target.value);
+                                                setSelectedUser(null);
+                                            }}
+                                            placeholder="Rechercher par nom ou prénom..."
+                                            className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-gray-200"
+                                        />
+
+                                        {/* Dropdown autocomplete */}
+                                        {showUserDropdown && (
+                                            <div className="absolute z-10 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-48 overflow-y-auto">
+                                                {isSearching ? (
+                                                    <div className="p-3 text-center text-gray-500 text-sm">
+                                                        Recherche en cours...
+                                                    </div>
+                                                ) : filteredResults.length === 0 ? (
+                                                    <div className="p-3 text-center text-gray-500 text-sm">
+                                                        Aucun utilisateur trouvé
+                                                    </div>
+                                                ) : (
+                                                    <div className="py-1">
+                                                        {filteredResults.map((user) => (
+                                                            <button
+                                                                key={user.id}
+                                                                type="button"
+                                                                onClick={() => handleSelectUser(user)}
+                                                                className="w-full px-3 py-2 flex items-center gap-3 hover:bg-gray-50 transition-colors text-left"
+                                                            >
+                                                                <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-xs font-medium text-gray-700">
+                                                                    {getInitials(user.name, user.email)}
+                                                                </div>
+                                                                <div>
+                                                                    <p className="text-sm font-medium text-gray-900">
+                                                                        {user.name || user.email}
+                                                                    </p>
+                                                                    {user.name && (
+                                                                        <p className="text-xs text-gray-500">{user.email}</p>
+                                                                    )}
+                                                                </div>
+                                                            </button>
+                                                        ))}
+                                                    </div>
+                                                )}
+                                            </div>
+                                        )}
+                                    </div>
                                     <button
                                         type="button"
                                         onClick={handleAddContributor}
-                                        disabled={isAdding || !newContributorEmail.trim()}
+                                        disabled={isAdding || !selectedUser}
                                         className="mt-2 w-full px-4 py-2 bg-gray-100 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                                     >
                                         {isAdding ? 'Ajout en cours...' : '+ Ajouter'}

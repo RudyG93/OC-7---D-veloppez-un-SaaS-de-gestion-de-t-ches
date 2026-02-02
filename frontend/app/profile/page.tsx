@@ -7,7 +7,7 @@ import Alert from '@/components/ui/Alert';
 import { useProfile, useUpdateProfile } from '@/hooks/useAuth';
 
 export default function ProfilePage() {
-    const { user, isLoading, error } = useProfile();
+    const { user, isLoading, error, refetch: refetchProfile } = useProfile();
     const { updateProfile, isLoading: isUpdating, error: updateError } = useUpdateProfile();
 
     // Calculer les valeurs initiales basées sur user
@@ -82,6 +82,7 @@ export default function ProfilePage() {
 
         try {
             await updateProfile(updateData);
+            await refetchProfile();
             setSuccessMessage('Profil mis à jour avec succès');
             setFormData(prev => ({ ...prev, password: '' }));
         } catch {
@@ -94,7 +95,7 @@ export default function ProfilePage() {
             <div className="min-h-screen flex flex-col bg-white">
                 <Header />
                 <main className="flex-1 flex items-center justify-center">
-                    <span className="loading loading-spinner loading-lg text-[#D3590B]"></span>
+                    <div className="spinner spinner-lg"></div>
                 </main>
                 <Footer />
             </div>
@@ -225,7 +226,7 @@ export default function ProfilePage() {
                             >
                                 {isUpdating ? (
                                     <span className="flex items-center gap-2">
-                                        <span className="loading loading-spinner loading-sm"></span>
+                                        <div className="spinner spinner-sm" style={{ borderTopColor: 'white', borderColor: 'rgba(255,255,255,0.3)' }}></div>
                                         Mise à jour...
                                     </span>
                                 ) : (

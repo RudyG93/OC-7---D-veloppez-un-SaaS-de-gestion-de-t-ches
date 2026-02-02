@@ -173,7 +173,7 @@ export default function TaskProject({
               {/* Liste des commentaires */}
               {commentsLoading ? (
                 <div className="flex items-center justify-center py-4">
-                  <span className="loading loading-spinner loading-sm text-gray-400"></span>
+                  <div className="spinner spinner-sm"></div>
                 </div>
               ) : comments.length === 0 ? (
                 <p className="text-sm text-gray-400 italic py-2">
@@ -219,7 +219,7 @@ export default function TaskProject({
                   className="px-4 py-2 bg-[#D3590B] text-white text-sm font-medium rounded-lg hover:bg-[#B84D0A] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {isCreating ? (
-                    <span className="loading loading-spinner loading-xs"></span>
+                    <div className="spinner spinner-sm" style={{ borderTopColor: 'white', borderColor: 'rgba(255,255,255,0.3)' }}></div>
                   ) : (
                     'Envoyer'
                   )}

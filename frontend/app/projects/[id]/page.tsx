@@ -24,7 +24,6 @@ export default function ProjectDetailPage() {
 
   const [view, setView] = useState<"list" | "calendar">("list");
   const [statusFilter, setStatusFilter] = useState<TaskStatus | "ALL">("ALL");
-  const [searchQuery, setSearchQuery] = useState("");
   const [showTaskModal, setShowTaskModal] = useState(false);
   const [showEditProjectModal, setShowEditProjectModal] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
@@ -37,6 +36,7 @@ export default function ProjectDetailPage() {
     project,
     isLoading: projectLoading,
     error: projectError,
+    refetch: refetchProject,
   } = useProject(projectId);
   const {
     tasks,
@@ -60,15 +60,6 @@ export default function ProjectDetailPage() {
   // Filtrer les tâches
   const filteredTasks = (tasks ?? []).filter((task) => {
     if (statusFilter !== "ALL" && task.status !== statusFilter) return false;
-    if (searchQuery) {
-      const query = searchQuery.toLowerCase();
-      if (
-        !task.title.toLowerCase().includes(query) &&
-        !task.description?.toLowerCase().includes(query)
-      ) {
-        return false;
-      }
-    }
     return true;
   });
 
@@ -121,7 +112,7 @@ export default function ProjectDetailPage() {
       <div className="min-h-screen flex flex-col bg-white">
         <Header />
         <main className="flex-1 flex items-center justify-center">
-          <span className="loading loading-spinner loading-lg text-[#D3590B]"></span>
+          <div className="spinner spinner-lg"></div>
         </main>
         <Footer />
       </div>
@@ -314,30 +305,6 @@ export default function ProjectDetailPage() {
                   <option value="IN_PROGRESS">En cours</option>
                   <option value="DONE">Terminée</option>
                 </select>
-
-                {/* Recherche */}
-                <div className="relative">
-                  <input
-                    type="text"
-                    placeholder="Rechercher une tâche"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="pl-10 pr-4 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#D3590B] focus:border-transparent w-48"
-                  />
-                  <svg
-                    className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                    />
-                  </svg>
-                </div>
               </div>
             </div>
           </div>
@@ -391,8 +358,8 @@ export default function ProjectDetailPage() {
       {showTaskModal && (
         <CreateTaskModal
           projectId={projectId}
-          project={project}
           onClose={() => setShowTaskModal(false)}
+          onSuccess={refetchTasks}
         />
       )}
 
@@ -400,8 +367,8 @@ export default function ProjectDetailPage() {
         <EditTaskModal
           task={selectedTask}
           projectId={projectId}
-          project={project}
           onClose={() => setSelectedTask(null)}
+          onSuccess={refetchTasks}
         />
       )}
 
@@ -409,6 +376,7 @@ export default function ProjectDetailPage() {
         <EditProjectModal
           project={project}
           onClose={() => setShowEditProjectModal(false)}
+          onSuccess={refetchProject}
         />
       )}
 

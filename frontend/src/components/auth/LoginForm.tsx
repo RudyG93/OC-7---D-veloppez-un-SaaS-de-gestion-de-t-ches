@@ -112,7 +112,7 @@ export default function LoginForm() {
                     className="w-full bg-gray-900 text-white py-3 px-4 rounded-full font-medium hover:bg-gray-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
                 >
                     {isLoading ? (
-                        <span className="loading loading-spinner loading-sm"></span>
+                        <div className="spinner spinner-sm" style={{ borderTopColor: 'white', borderColor: 'rgba(255,255,255,0.3)' }}></div>
                     ) : (
                         'Se connecter'
                     )}

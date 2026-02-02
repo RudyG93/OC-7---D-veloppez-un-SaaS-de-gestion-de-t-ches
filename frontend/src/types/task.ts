@@ -81,6 +81,8 @@ export interface CreateTaskRequest {
     title: string;
     /** Description de la tâche */
     description?: string;
+    /** Statut de la tâche (défaut: TODO) */
+    status?: TaskStatus;
     /** Niveau de priorité (défaut: MEDIUM) */
     priority?: TaskPriority;
     /** Date d'échéance (format ISO) */

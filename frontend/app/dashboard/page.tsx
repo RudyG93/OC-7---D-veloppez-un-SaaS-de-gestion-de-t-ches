@@ -164,7 +164,7 @@ export default function DashboardPage() {
                 {/* Contenu selon la vue */}
                 {isLoading ? (
                     <div className="flex items-center justify-center py-20">
-                        <span className="loading loading-spinner loading-lg text-[#E65C00]"></span>
+                        <div className="spinner spinner-lg"></div>
                     </div>
                 ) : (
                     <>
