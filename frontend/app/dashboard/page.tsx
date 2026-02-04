@@ -1,3 +1,10 @@
+/**
+ * Page du tableau de bord
+ * 
+ * Affiche les tâches assignées à l'utilisateur connecté.
+ * Propose deux vues : liste et kanban.
+ * Permet de filtrer les tâches par recherche textuelle.
+ */
 'use client';
 
 import { useState, useMemo } from 'react';
@@ -7,15 +14,16 @@ import Footer from '@/components/layout/Footer';
 import Alert from '@/components/ui/Alert';
 import Spinner from '@/components/ui/Spinner';
 import Button from '@/components/ui/Button';
-import { PlusIcon } from '@/components/ui/IconButton';
+import { PlusIcon } from '@/components/ui/Icons';
 import TaskList from '@/components/dashboard/ViewList';
 import KanbanBoard from '@/components/dashboard/ViewKanban';
 import { useProfile } from '@/hooks/useAuth';
-import { useAssignedTasks, useProjectsWithTasks } from '@/hooks/useDashboard';
+import { useAssignedTasks } from '@/hooks/useDashboard';
 import { Task } from '@/types';
 import CreateProjectModal from '@/components/modals/CreateProject';
 
-type ViewType = 'list' | 'kanban' | 'projects';
+/** Types de vue disponibles */
+type ViewType = 'list' | 'kanban';
 
 export default function DashboardPage() {
     const router = useRouter();
@@ -24,22 +32,14 @@ export default function DashboardPage() {
     const [showCreateModal, setShowCreateModal] = useState(false);
 
     const { user } = useProfile();
-    const { tasks: assignedTasks, isLoading: tasksLoading, error: tasksError } = useAssignedTasks();
-    const { isLoading: projectsLoading, error: projectsError } =
-        useProjectsWithTasks();
+    const { tasks: assignedTasks, isLoading, error } = useAssignedTasks();
 
-    // Erreur combinée
-    const error = tasksError || projectsError;
-
-    // Trier les tâches par priorité (urgentes d'abord) puis par date
+    /**
+     * Trie les tâches par date d'échéance
+     * Les tâches avec date apparaissent en premier
+     */
     const sortedTasks = useMemo(() => {
-        const priorityOrder = { URGENT: 0, HIGH: 1, MEDIUM: 2, LOW: 3 };
         return [...(assignedTasks ?? [])].sort((a, b) => {
-            // D'abord par priorité
-            const priorityDiff = priorityOrder[a.priority] - priorityOrder[b.priority];
-            if (priorityDiff !== 0) return priorityDiff;
-
-            // Ensuite par date d'échéance
             if (a.dueDate && b.dueDate) {
                 return new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime();
             }
@@ -49,7 +49,10 @@ export default function DashboardPage() {
         });
     }, [assignedTasks]);
 
-    // Filtrer les tâches selon la recherche
+    /**
+     * Filtre les tâches selon la recherche textuelle
+     * Recherche dans le titre, la description et le nom du projet
+     */
     const filteredTasks = useMemo(() => {
         if (!searchQuery) return sortedTasks;
         const query = searchQuery.toLowerCase();
@@ -61,12 +64,10 @@ export default function DashboardPage() {
         );
     }, [sortedTasks, searchQuery]);
 
+    /** Redirige vers la page du projet lors du clic sur une tâche */
     const handleTaskClick = (task: Task) => {
-        // Navigation vers la page du projet (la tâche sera visible dans le détail du projet)
         router.push(`/projects/${task.projectId}`);
     };
-
-    const isLoading = tasksLoading || projectsLoading;
 
     return (
         <div className="min-h-screen flex flex-col bg-white">
@@ -103,53 +104,33 @@ export default function DashboardPage() {
 
                 {/* Tabs de vue */}
                 <div className="flex items-center gap-2 mb-6">
-                    <button
+                    <Button
                         onClick={() => setView('list')}
-                        className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-                            view === 'list'
-                                ? 'bg-orange-100 text-[#E65C00]'
-                                : 'text-gray-600 hover:bg-gray-100'
-                        }`}
+                        variant="ghost"
+                        rounded
+                        className={view === 'list' ? 'bg-orange-100 text-[#E65C00] hover:bg-orange-100' : ''}
+                        leftIcon={
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                            </svg>
+                        }
                     >
-                        <svg
-                            className="w-4 h-4"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                        >
-                            <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
-                            />
-                        </svg>
                         Liste
-                    </button>
+                    </Button>
 
-                    <button
+                    <Button
                         onClick={() => setView('kanban')}
-                        className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-                            view === 'kanban'
-                                ? 'bg-orange-100 text-[#E65C00]'
-                                : 'text-gray-600 hover:bg-gray-100'
-                        }`}
+                        variant="ghost"
+                        rounded
+                        className={view === 'kanban' ? 'bg-orange-100 text-[#E65C00] hover:bg-orange-100' : ''}
+                        leftIcon={
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                            </svg>
+                        }
                     >
-                        <svg
-                            className="w-4 h-4"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                        >
-                            <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-                            />
-                        </svg>
                         Kanban
-                    </button>
+                    </Button>
                 </div>
 
                 {/* Contenu selon la vue */}
@@ -163,7 +144,7 @@ export default function DashboardPage() {
                             <TaskList
                                 tasks={filteredTasks}
                                 title="Mes tâches assignées"
-                                subtitle="Par ordre de priorité"
+                                subtitle="Par date d'échéance"
                                 onTaskClick={handleTaskClick}
                                 emptyMessage="Aucune tâche assignée"
                                 showSearch

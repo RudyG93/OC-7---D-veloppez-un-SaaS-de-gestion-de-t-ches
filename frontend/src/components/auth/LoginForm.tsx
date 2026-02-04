@@ -6,6 +6,7 @@ import { useLogin } from '@/hooks/useAuth';
 import { validateLoginForm, ValidationError } from '@/lib/validation';
 import Alert from '@/components/ui/Alert';
 import Button from '@/components/ui/Button';
+import Input from '@/components/ui/Input';
 
 export default function LoginForm() {
     const [email, setEmail] = useState('');
@@ -50,78 +51,40 @@ export default function LoginForm() {
             )}
 
             <form onSubmit={handleSubmit} className="space-y-6">
-                {/* Email */}
-                <div>
-                    <label
-                        htmlFor="email"
-                        className="block text-sm font-medium text-gray-900 mb-2"
-                    >
-                        Email
-                    </label>
-                    <input
-                        id="email"
-                        name="email"
-                        type="email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        aria-invalid={!!getFieldError('email')}
-                        aria-describedby={getFieldError('email') ? 'email-error' : undefined}
-                        className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#E65C00] focus:border-transparent ${
-                            getFieldError('email')
-                                ? 'border-red-500'
-                                : 'border-gray-300'
-                        }`}
-                        required
-                    />
-                    {getFieldError('email') && (
-                        <p id="email-error" role="alert" className="mt-1 text-sm text-red-500">
-                            {getFieldError('email')}
-                        </p>
-                    )}
-                </div>
+                <Input
+                    label="Email"
+                    id="email"
+                    name="email"
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    error={getFieldError('email')}
+                    required
+                    inputSize="lg"
+                />
 
-                {/* Mot de passe */}
-                <div>
-                    <label
-                        htmlFor="password"
-                        className="block text-sm font-medium text-gray-900 mb-2"
-                    >
-                        Mot de passe
-                    </label>
-                    <input
-                        id="password"
-                        name="password"
-                        type="password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        aria-invalid={!!getFieldError('password')}
-                        aria-describedby={getFieldError('password') ? 'password-error' : undefined}
-                        className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#E65C00] focus:border-transparent ${
-                            getFieldError('password')
-                                ? 'border-red-500'
-                                : 'border-gray-300'
-                        }`}
-                        required
-                    />
-                    {getFieldError('password') && (
-                        <p id="password-error" role="alert" className="mt-1 text-sm text-red-500">
-                            {getFieldError('password')}
-                        </p>
-                    )}
-                </div>
+                <Input
+                    label="Mot de passe"
+                    id="password"
+                    name="password"
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    error={getFieldError('password')}
+                    required
+                    inputSize="lg"
+                />
 
                 {/* Bouton de connexion */}
                 <Button
                     type="submit"
                     disabled={isLoading}
-                    isLoading={isLoading}
-                    loadingText=""
                     variant="primary"
                     fullWidth
                     rounded
                     size="lg"
                 >
-                    Se connecter
+                    {isLoading ? 'Connexion...' : 'Se connecter'}
                 </Button>
 
                 {/* Mot de passe oublié */}

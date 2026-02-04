@@ -60,3 +60,118 @@ label[for],
     transform: rotate(360deg);
   }
 }
+
+/* ============================================================================
+   Form Input Styles
+   ============================================================================ */
+
+/**
+ * Base input style - standard form input with orange focus ring
+ * Usage: className="form-input"
+ */
+.form-input {
+  @apply w-full px-4 py-2 bg-white border border-gray-200 rounded-lg text-sm;
+  @apply focus:outline-none focus:ring-2 focus:ring-[#E65C00] focus:border-transparent;
+}
+
+/**
+ * Textarea variant - adds resize-none
+ * Usage: className="form-input form-textarea"
+ */
+.form-textarea {
+  @apply resize-none;
+}
+
+/**
+ * Search input - slightly smaller padding
+ * Usage: className="form-input-search"
+ */
+.form-input-search {
+  @apply px-3 py-2 border border-gray-200 rounded-lg text-sm;
+  @apply focus:outline-none focus:ring-2 focus:ring-[#E65C00];
+}
+
+/* ============================================================================
+   Interactive Card Styles
+   ============================================================================ */
+
+/**
+ * Clickable card with hover shadow and focus ring
+ * Usage: className="card-interactive"
+ */
+.card-interactive {
+  @apply bg-white border border-gray-200 rounded-xl;
+  @apply hover:shadow-md transition-shadow cursor-pointer;
+  @apply focus:outline-none focus:ring-2 focus:ring-[#E65C00] focus:ring-offset-2;
+}
+
+/**
+ * Card with larger hover shadow (for project cards)
+ * Usage: className="card-interactive-lg"
+ */
+.card-interactive-lg {
+  @apply bg-white border border-gray-200 rounded-xl;
+  @apply hover:shadow-lg transition-shadow cursor-pointer;
+  @apply focus:outline-none focus:ring-2 focus:ring-[#E65C00] focus:ring-offset-2;
+}
+
+/* ============================================================================
+   Dropdown Styles
+   ============================================================================ */
+
+/**
+ * Dropdown container
+ * Usage: className="dropdown-menu"
+ */
+.dropdown-menu {
+  @apply absolute z-10 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg;
+}
+
+/**
+ * Dropdown trigger button
+ * Usage: className="dropdown-trigger"
+ */
+.dropdown-trigger {
+  @apply w-full px-4 py-2 border border-gray-200 rounded-lg text-sm text-left;
+  @apply flex items-center justify-between bg-white hover:bg-gray-50;
+  @apply focus:outline-none focus:ring-2 focus:ring-[#E65C00];
+}
+
+/**
+ * Dropdown item (clickable)
+ * Usage: className="dropdown-item"
+ */
+.dropdown-item {
+  @apply w-full px-3 py-2 text-left text-sm text-gray-700;
+  @apply hover:bg-gray-50 focus:outline-none focus:bg-gray-100;
+}
+
+/**
+ * Dropdown item danger variant
+ * Usage: className="dropdown-item-danger"
+ */
+.dropdown-item-danger {
+  @apply w-full px-3 py-2 text-left text-sm text-red-600;
+  @apply hover:bg-red-50 focus:outline-none focus:bg-red-100;
+}
+
+/* ============================================================================
+   Badge/Tag Styles
+   ============================================================================ */
+
+/**
+ * Small badge for assignees, tags, etc.
+ * Usage: className="badge"
+ */
+.badge {
+  @apply inline-flex items-center gap-1 px-2 py-1 bg-gray-100 rounded-full text-xs;
+}
+
+/**
+ * Orange accent badge (admin, owner)
+ * Usage: className="badge-orange"
+ */
+.badge-orange {
+  @apply px-2 py-1 bg-[#FFE8D9] text-[#D3590B] text-xs font-medium rounded;
+}
+

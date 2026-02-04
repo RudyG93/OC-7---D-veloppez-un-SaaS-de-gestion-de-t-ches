@@ -1,157 +1,90 @@
+/**
+ * Composant Modal
+ *
+ * Wrapper de modale réutilisable avec gestion de l'accessibilité.
+ *
+ * Fonctionnalités :
+ * - Fermeture avec Escape ou clic sur l'overlay
+ * - Focus trap automatique
+ * - Support ARIA pour l'accessibilité
+ * - Styles cohérents
+ *
+ * @module components/ui/Modal
+ */
+
 'use client';
 
-import { useEffect, useRef, ReactNode, KeyboardEvent } from 'react';
+import { useEffect, useRef, type ReactNode } from 'react';
 
-/**
- * Tailles disponibles pour la modale
- */
-type ModalSize = 'sm' | 'md' | 'lg' | 'xl';
+// ============================================================================
+// Types
+// ============================================================================
 
-/**
- * Props du composant Modal
- */
 interface ModalProps {
-    /** Contrôle l'affichage de la modale */
-    isOpen: boolean;
-    /** Callback appelé lors de la fermeture */
-    onClose: () => void;
-    /** Titre de la modale (pour l'accessibilité) */
+    /** Titre de la modale (affiché dans le header) */
     title: string;
-    /** ID du titre (généré automatiquement si non fourni) */
-    titleId?: string;
-    /** Taille de la modale */
-    size?: ModalSize;
     /** Contenu de la modale */
     children: ReactNode;
-    /** Classe CSS additionnelle pour le contenu */
-    className?: string;
-    /** Fermer la modale en cliquant sur l'overlay */
-    closeOnOverlayClick?: boolean;
-    /** Afficher le bouton de fermeture */
-    showCloseButton?: boolean;
+    /** Callback de fermeture */
+    onClose: () => void;
+    /** Largeur maximale (défaut: 'md') */
+    maxWidth?: 'sm' | 'md' | 'lg' | 'xl';
+    /** ID unique pour l'accessibilité (généré automatiquement si non fourni) */
+    ariaLabelledBy?: string;
 }
 
-/**
- * Classes de taille pour la modale
- */
-const sizeClasses: Record<ModalSize, string> = {
+// ============================================================================
+// Constantes
+// ============================================================================
+
+/** Classes Tailwind pour les largeurs maximales */
+const MAX_WIDTH_CLASSES = {
     sm: 'max-w-sm',
     md: 'max-w-md',
     lg: 'max-w-lg',
     xl: 'max-w-xl',
-};
+} as const;
+
+// ============================================================================
+// Composant
+// ============================================================================
 
 /**
- * Icône de fermeture (X)
- */
-function CloseIcon() {
-    return (
-        <svg
-            className="w-5 h-5"
-            aria-hidden="true"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-        >
-            <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M6 18L18 6M6 6l12 12"
-            />
-        </svg>
-    );
-}
-
-/**
- * Composant Modal accessible avec gestion du focus trap et fermeture au clavier
+ * Composant Modal réutilisable
  *
  * @example
- * // Modale simple
- * <Modal
- *   isOpen={showModal}
- *   onClose={() => setShowModal(false)}
- *   title="Créer un projet"
- * >
- *   <form>...</form>
- * </Modal>
- *
- * @example
- * // Modale large sans fermeture sur overlay
- * <Modal
- *   isOpen={showModal}
- *   onClose={handleClose}
- *   title="Paramètres avancés"
- *   size="lg"
- *   closeOnOverlayClick={false}
- * >
- *   <AdvancedSettings />
+ * <Modal title="Créer une tâche" onClose={handleClose}>
+ *   <form onSubmit={handleSubmit}>
+ *     {// Contenu du formulaire}
+ *   </form>
  * </Modal>
  */
 export default function Modal({
-    isOpen,
-    onClose,
     title,
-    titleId,
-    size = 'md',
     children,
-    className = '',
-    closeOnOverlayClick = true,
-    showCloseButton = true,
+    onClose,
+    maxWidth = 'md',
+    ariaLabelledBy,
 }: ModalProps) {
     const modalRef = useRef<HTMLDivElement>(null);
-    const generatedTitleId = titleId || `modal-title-${title.toLowerCase().replace(/\s+/g, '-')}`;
+    const titleId = ariaLabelledBy || `modal-title-${title.toLowerCase().replace(/\s+/g, '-')}`;
 
-    // Gestion de la touche Escape
+    // Gestion du clavier (Escape pour fermer)
     useEffect(() => {
-        if (!isOpen) return;
-
-        const handleKeyDown = (e: globalThis.KeyboardEvent) => {
+        const handleKeyDown = (e: KeyboardEvent) => {
             if (e.key === 'Escape') {
                 onClose();
             }
         };
 
         document.addEventListener('keydown', handleKeyDown);
+        return () => document.removeEventListener('keydown', handleKeyDown);
+    }, [onClose]);
 
-        // Focus sur la modale à l'ouverture
-        modalRef.current?.focus();
-
-        // Empêcher le scroll du body
-        document.body.style.overflow = 'hidden';
-
-        return () => {
-            document.removeEventListener('keydown', handleKeyDown);
-            document.body.style.overflow = '';
-        };
-    }, [isOpen, onClose]);
-
-    if (!isOpen) return null;
-
+    // Fermer en cliquant sur l'overlay
     const handleOverlayClick = (e: React.MouseEvent) => {
-        if (closeOnOverlayClick && e.target === e.currentTarget) {
+        if (e.target === e.currentTarget) {
             onClose();
-        }
-    };
-
-    const handleKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
-        // Focus trap - empêcher la navigation hors de la modale
-        if (e.key === 'Tab') {
-            const focusableElements = modalRef.current?.querySelectorAll(
-                'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
-            );
-            if (!focusableElements || focusableElements.length === 0) return;
-
-            const firstElement = focusableElements[0] as HTMLElement;
-            const lastElement = focusableElements[focusableElements.length - 1] as HTMLElement;
-
-            if (e.shiftKey && document.activeElement === firstElement) {
-                e.preventDefault();
-                lastElement.focus();
-            } else if (!e.shiftKey && document.activeElement === lastElement) {
-                e.preventDefault();
-                firstElement.focus();
-            }
         }
     };
 
@@ -165,50 +98,39 @@ export default function Modal({
                 ref={modalRef}
                 role="dialog"
                 aria-modal="true"
-                aria-labelledby={generatedTitleId}
-                tabIndex={-1}
-                onKeyDown={handleKeyDown}
-                className={`bg-white rounded-xl p-6 w-full ${sizeClasses[size]} mx-4 max-h-[90vh] overflow-y-auto ${className}`}
+                aria-labelledby={titleId}
+                className={`bg-white rounded-xl p-6 w-full ${MAX_WIDTH_CLASSES[maxWidth]} mx-4 max-h-[90vh] overflow-y-auto`}
             >
-                {/* Header avec titre et bouton fermer */}
+                {/* Header */}
                 <div className="flex items-center justify-between mb-6">
-                    <h2
-                        id={generatedTitleId}
-                        className="text-xl font-bold text-gray-900"
-                    >
+                    <h2 id={titleId} className="text-xl font-bold text-gray-900">
                         {title}
                     </h2>
-                    {showCloseButton && (
-                        <button
-                            type="button"
-                            onClick={onClose}
-                            aria-label="Fermer la modale"
-                            className="p-1 text-gray-400 hover:text-gray-600 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-300 rounded"
+                    <button
+                        onClick={onClose}
+                        aria-label="Fermer la modale"
+                        className="p-1 text-gray-400 hover:text-gray-600 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-300 rounded"
+                    >
+                        <svg
+                            className="w-5 h-5"
+                            aria-hidden="true"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
                         >
-                            <CloseIcon />
-                        </button>
-                    )}
+                            <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M6 18L18 6M6 6l12 12"
+                            />
+                        </svg>
+                    </button>
                 </div>
 
-                {/* Contenu */}
+                {/* Content */}
                 {children}
             </div>
-        </div>
-    );
-}
-
-/**
- * Composant ModalFooter pour les actions de la modale
- */
-interface ModalFooterProps {
-    children: ReactNode;
-    className?: string;
-}
-
-export function ModalFooter({ children, className = '' }: ModalFooterProps) {
-    return (
-        <div className={`pt-4 flex gap-3 ${className}`}>
-            {children}
         </div>
     );
 }

@@ -1,3 +1,14 @@
+/**
+ * En-tête de l'application
+ *
+ * Composant de navigation principale affichant :
+ * - Logo avec lien vers le dashboard
+ * - Navigation (Dashboard, Projets)
+ * - Menu utilisateur avec dropdown (profil, déconnexion)
+ *
+ * @module components/layout/Header
+ */
+
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
@@ -7,6 +18,10 @@ import { usePathname } from 'next/navigation';
 import { useProfile, useLogout } from '@/hooks/useAuth';
 import { getInitials } from '@/lib/utils';
 
+// ============================================================================
+// Composant
+// ============================================================================
+
 export default function Header() {
     const pathname = usePathname();
     const { user } = useProfile();
@@ -14,21 +29,21 @@ export default function Header() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const menuRef = useRef<HTMLDivElement>(null);
 
-    // Fermer le menu si on clique en dehors
+    // Fermer le menu au clic extérieur
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
             if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
                 setIsMenuOpen(false);
             }
         };
-
         document.addEventListener('mousedown', handleClickOutside);
         return () => document.removeEventListener('mousedown', handleClickOutside);
     }, []);
 
-    // Obtenir les initiales de l'utilisateur
+    /** Initiales de l'utilisateur pour l'avatar */
     const userInitials = getInitials(user?.name || '', user?.email);
 
+    /** Vérifie si un chemin est actif */
     const isActive = (path: string) => pathname === path;
 
     return (

@@ -1,82 +1,100 @@
+/**
+ * Page de profil utilisateur
+ * 
+ * Permet à l'utilisateur de consulter et modifier ses informations
+ * personnelles : nom, prénom, email et mot de passe.
+ */
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import Alert from '@/components/ui/Alert';
 import Button from '@/components/ui/Button';
+import Input from '@/components/ui/Input';
 import Spinner from '@/components/ui/Spinner';
 import { useProfile, useUpdateProfile } from '@/hooks/useAuth';
+
+/** Structure des données du formulaire */
+interface FormData {
+    firstName: string;
+    lastName: string;
+    email: string;
+    password: string;
+}
+
+/** Parse le nom complet en prénom et nom */
+function parseUserName(fullName?: string | null): { firstName: string; lastName: string } {
+    const nameParts = fullName?.split(' ') || ['', ''];
+    return {
+        firstName: nameParts[0] || '',
+        lastName: nameParts.slice(1).join(' ') || '',
+    };
+}
 
 export default function ProfilePage() {
     const { user, isLoading, error, refetch: refetchProfile } = useProfile();
     const { updateProfile, isLoading: isUpdating, error: updateError } = useUpdateProfile();
 
-    // Calculer les valeurs initiales basées sur user
-    const getInitialFormData = () => {
-        if (user) {
-            const nameParts = user.name?.split(' ') || ['', ''];
-            return {
-                firstName: nameParts[0] || '',
-                lastName: nameParts.slice(1).join(' ') || '',
-                email: user.email || '',
-                password: '',
-            };
-        }
+    // Calculer les valeurs initiales à partir de user (mémorisé pour éviter les re-renders)
+    const initialFormData = useMemo<FormData>(() => {
+        const { firstName, lastName } = parseUserName(user?.name);
         return {
-            lastName: '',
-            firstName: '',
-            email: '',
+            firstName,
+            lastName,
+            email: user?.email || '',
             password: '',
         };
-    };
+    }, [user?.name, user?.email]);
 
-    const [formData, setFormData] = useState(getInitialFormData);
+    const [formData, setFormData] = useState<FormData>(initialFormData);
     const [successMessage, setSuccessMessage] = useState('');
 
-    // Mettre à jour le formulaire quand user change (après le chargement initial)
-    const [prevUserId, setPrevUserId] = useState(user?.id);
-    if (user?.id !== prevUserId) {
-        setPrevUserId(user?.id);
-        const nameParts = user?.name?.split(' ') || ['', ''];
+    // Synchroniser avec les données utilisateur quand elles changent
+    const [lastUserId, setLastUserId] = useState(user?.id);
+    if (user?.id && user.id !== lastUserId) {
+        setLastUserId(user.id);
+        const { firstName, lastName } = parseUserName(user.name);
         setFormData({
-            firstName: nameParts[0] || '',
-            lastName: nameParts.slice(1).join(' ') || '',
-            email: user?.email || '',
+            firstName,
+            lastName,
+            email: user.email || '',
             password: '',
         });
     }
 
+    /**
+     * Gère les changements dans les champs du formulaire
+     */
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
-        setFormData(prev => ({
-            ...prev,
-            [name]: value,
-        }));
+        setFormData(prev => ({ ...prev, [name]: value }));
         setSuccessMessage('');
     };
 
+    /**
+     * Soumet les modifications du profil
+     * Ne soumet que les champs modifiés
+     */
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setSuccessMessage('');
 
+        // Construire l'objet des modifications
         const updateData: { name?: string; email?: string; password?: string } = {};
 
-        // Combiner prénom et nom
         const fullName = `${formData.firstName} ${formData.lastName}`.trim();
         if (fullName && fullName !== user?.name) {
             updateData.name = fullName;
         }
-
         if (formData.email && formData.email !== user?.email) {
             updateData.email = formData.email;
         }
-
         if (formData.password) {
             updateData.password = formData.password;
         }
 
-        // Ne rien faire si aucune modification
+        // Vérifier s'il y a des modifications
         if (Object.keys(updateData).length === 0) {
             setSuccessMessage('Aucune modification détectée');
             return;
@@ -92,6 +110,7 @@ export default function ProfilePage() {
         }
     };
 
+    // État de chargement
     if (isLoading) {
         return (
             <div className="min-h-screen flex flex-col bg-white">
@@ -104,6 +123,7 @@ export default function ProfilePage() {
         );
     }
 
+    // État d'erreur ou utilisateur non trouvé
     if (error || !user) {
         return (
             <div className="min-h-screen flex flex-col bg-white">
@@ -126,7 +146,6 @@ export default function ProfilePage() {
             <Header />
 
             <main className="flex-1 max-w-2xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8">
-                {/* Carte du profil */}
                 <div className="bg-white border border-gray-200 rounded-xl p-8">
                     {/* En-tête */}
                     <div className="mb-8">
@@ -134,15 +153,10 @@ export default function ProfilePage() {
                         <p className="text-gray-500">{user.name || user.email}</p>
                     </div>
 
-                    {/* Messages */}
+                    {/* Messages de feedback */}
                     {updateError && (
-                        <Alert
-                            type="error"
-                            message={updateError}
-                            className="mb-6"
-                        />
+                        <Alert type="error" message={updateError} className="mb-6" />
                     )}
-
                     {successMessage && (
                         <Alert
                             type="success"
@@ -153,87 +167,56 @@ export default function ProfilePage() {
                         />
                     )}
 
-                    {/* Formulaire */}
+                    {/* Formulaire de modification */}
                     <form onSubmit={handleSubmit} className="space-y-6">
-                        {/* Nom */}
-                        <div>
-                            <label htmlFor="lastName" className="block text-sm font-medium text-gray-700 mb-2">
-                                Nom
-                            </label>
-                            <input
-                                type="text"
-                                id="lastName"
-                                name="lastName"
-                                value={formData.lastName}
-                                onChange={handleInputChange}
-                                className="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg text-gray-700 text-sm focus:ring-2 focus:ring-[#D3590B] focus:border-[#D3590B] transition-colors"
-                                placeholder="Votre nom"
-                            />
-                        </div>
+                        <Input
+                            label="Nom"
+                            type="text"
+                            id="lastName"
+                            name="lastName"
+                            value={formData.lastName}
+                            onChange={handleInputChange}
+                            placeholder="Votre nom"
+                            inputSize="lg"
+                        />
+                        <Input
+                            label="Prénom"
+                            type="text"
+                            id="firstName"
+                            name="firstName"
+                            value={formData.firstName}
+                            onChange={handleInputChange}
+                            placeholder="Votre prénom"
+                            inputSize="lg"
+                        />
+                        <Input
+                            label="Email"
+                            type="email"
+                            id="email"
+                            name="email"
+                            value={formData.email}
+                            onChange={handleInputChange}
+                            placeholder="votre@email.com"
+                            inputSize="lg"
+                        />
+                        <Input
+                            label="Mot de passe"
+                            type="password"
+                            id="password"
+                            name="password"
+                            value={formData.password}
+                            onChange={handleInputChange}
+                            placeholder="Nouveau mot de passe (laisser vide pour ne pas modifier)"
+                            inputSize="lg"
+                        />
 
-                        {/* Prénom */}
-                        <div>
-                            <label htmlFor="firstName" className="block text-sm font-medium text-gray-700 mb-2">
-                                Prénom
-                            </label>
-                            <input
-                                type="text"
-                                id="firstName"
-                                name="firstName"
-                                value={formData.firstName}
-                                onChange={handleInputChange}
-                                className="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg text-gray-700 text-sm focus:ring-2 focus:ring-[#D3590B] focus:border-[#D3590B] transition-colors"
-                                placeholder="Votre prénom"
-                            />
-                        </div>
-
-                        {/* Email */}
-                        <div>
-                            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
-                                Email
-                            </label>
-                            <input
-                                type="email"
-                                id="email"
-                                name="email"
-                                value={formData.email}
-                                onChange={handleInputChange}
-                                className="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg text-gray-700 text-sm focus:ring-2 focus:ring-[#D3590B] focus:border-[#D3590B] transition-colors"
-                                placeholder="votre@email.com"
-                            />
-                        </div>
-
-                        {/* Mot de passe */}
-                        <div>
-                            <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
-                                Mot de passe
-                            </label>
-                            <input
-                                type="password"
-                                id="password"
-                                name="password"
-                                value={formData.password}
-                                onChange={handleInputChange}
-                                className="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg text-gray-700 text-sm focus:ring-2 focus:ring-[#D3590B] focus:border-[#D3590B] transition-colors"
-                                placeholder="Nouveau mot de passe (laisser vide pour ne pas modifier)"
-                            />
-                        </div>
-
-                        {/* Bouton */}
                         <div className="pt-4">
                             <Button
                                 type="submit"
                                 variant="primary"
-                                isLoading={isUpdating}
+                                disabled={isUpdating}
                             >
-                                {isUpdating ? (
-                                    <span className="flex items-center gap-2">
-                                        <Spinner size="sm" color="white" label="Mise à jour en cours" />
-                                        Mise à jour...
-                                    </span>
-                                ) : (
-                                    'Modifier les informations'
-                                )}
+                                {isUpdating ? 'Mise à jour...' : 'Modifier les informations'}
                             </Button>
                         </div>
                     </form>

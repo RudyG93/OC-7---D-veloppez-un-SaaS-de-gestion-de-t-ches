@@ -39,12 +39,6 @@ export type {
     CommentResponse,
 } from './comment';
 
-// Types dashboard
-export type {
-    DashboardStats,
-    StatsResponse,
-} from './dashboard';
-
 // Types API génériques
 export type { ApiResponse } from './api';
 

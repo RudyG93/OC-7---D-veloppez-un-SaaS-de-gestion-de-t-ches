@@ -31,7 +31,7 @@ export default function ProjectCard({ project, user }: ProjectCardProps) {
         <Link
             href={`/projects/${project.id}`}
             aria-label={`Projet ${project.name}, progression ${progressPercent}%, ${completedTasks} sur ${totalTasks} tâches terminées`}
-            className="block bg-white border border-gray-200 rounded-xl p-6 hover:shadow-lg transition-shadow focus:outline-none focus:ring-2 focus:ring-[#E65C00] focus:ring-offset-2"
+            className="card-interactive-lg block p-6"
         >
             {/* Titre */}
             <h3 className="text-lg font-bold text-gray-900 mb-2">

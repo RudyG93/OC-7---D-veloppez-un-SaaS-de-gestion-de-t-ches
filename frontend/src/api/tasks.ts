@@ -3,7 +3,6 @@
  *
  * Ce module fournit les fonctions d'appel API pour :
  * - Récupérer les tâches d'un projet
- * - Récupérer une tâche spécifique
  * - Créer une nouvelle tâche
  * - Modifier une tâche existante (statut, assignés, etc.)
  * - Supprimer une tâche
@@ -12,8 +11,7 @@
  * Toutes les fonctions nécessitent une authentification via JWT.
  */
 
-import { API_BASE_URL } from '@/lib/api';
-import { cookieUtils } from '@/lib/cookies';
+import { API_BASE_URL, authHeaders } from '@/lib/api';
 import type {
     ApiResponse,
     TasksResponse,
@@ -21,19 +19,6 @@ import type {
     CreateTaskRequest,
     UpdateTaskRequest,
 } from '@/types';
-
-// ============================================================================
-// Configuration
-// ============================================================================
-
-/**
- * Génère les headers d'authentification pour les requêtes API
- * @returns Headers avec authentification Bearer JWT
- */
-const authHeaders = () => ({
-    'Content-Type': 'application/json',
-    Authorization: `Bearer ${cookieUtils.getToken()}`,
-});
 
 // ============================================================================
 // Fonctions de lecture (GET)
@@ -66,36 +51,6 @@ export async function getTasksApi(projectId: string): Promise<ApiResponse<TasksR
     const data = await response.json();
     if (!response.ok) {
         throw new Error(data.message || 'Erreur lors de la récupération des tâches');
-    }
-    return data;
-}
-
-/**
- * Récupère les détails d'une tâche spécifique
- *
- * Retourne la tâche avec ses informations complètes,
- * incluant les commentaires si disponibles.
- *
- * @param projectId - Identifiant du projet parent
- * @param taskId - Identifiant de la tâche
- * @returns Tâche avec ses détails complets
- * @throws Error si la tâche n'existe pas ou accès refusé
- *
- * @example
- * const response = await getTaskApi('project-uuid', 'task-uuid');
- * const task = response.data.task;
- */
-export async function getTaskApi(
-    projectId: string,
-    taskId: string
-): Promise<ApiResponse<TaskResponse>> {
-    const response = await fetch(`${API_BASE_URL}/projects/${projectId}/tasks/${taskId}`, {
-        headers: authHeaders(),
-    });
-
-    const data = await response.json();
-    if (!response.ok) {
-        throw new Error(data.message || 'Erreur lors de la récupération de la tâche');
     }
     return data;
 }

@@ -1,24 +1,37 @@
+/**
+ * Carte de tâche (vue liste)
+ *
+ * Affiche une tâche avec :
+ * - Titre et description
+ * - Métadonnées (projet, échéance, commentaires)
+ * - Statut et bouton d'action
+ *
+ * @module components/tasks/TaskCardList
+ */
+
 'use client';
 
 import type { Task } from '@/types';
 import StatusTag from './StatusTag';
+import Button from '@/components/ui/Button';
+import { formatDate } from '@/lib/utils';
+
+// ============================================================================
+// Types
+// ============================================================================
 
 interface TaskCardProps {
+    /** Tâche à afficher */
     task: Task;
+    /** Callback au clic sur la carte */
     onClick?: () => void;
 }
 
-export default function TaskCard({ task, onClick }: TaskCardProps) {
-    // Formater la date
-    const formatDate = (dateString: string | null) => {
-        if (!dateString) return null;
-        const date = new Date(dateString);
-        return date.toLocaleDateString('fr-FR', {
-            day: 'numeric',
-            month: 'long',
-        });
-    };
+// ============================================================================
+// Composant
+// ============================================================================
 
+export default function TaskCard({ task, onClick }: TaskCardProps) {
     const commentsCount = task._count?.comments ?? task.comments?.length ?? 0;
 
     return (
@@ -26,7 +39,7 @@ export default function TaskCard({ task, onClick }: TaskCardProps) {
             tabIndex={0}
             role="listitem"
             aria-label={`Tâche: ${task.title}, statut: ${task.status === 'TODO' ? 'À faire' : task.status === 'IN_PROGRESS' ? 'En cours' : task.status === 'DONE' ? 'Terminée' : task.status}`}
-            className="bg-white border border-gray-200 rounded-xl p-6 hover:shadow-md transition-shadow cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#E65C00] focus:ring-offset-2"
+            className="card-interactive p-6"
             onClick={() => onClick?.()}
             onKeyDown={(e) => {
                 if (e.key === 'Enter' || e.key === ' ') {
@@ -116,15 +129,15 @@ export default function TaskCard({ task, onClick }: TaskCardProps) {
                 {/* Statut et bouton */}
                 <div className="flex flex-col items-end gap-4">
                     <StatusTag status={task.status} />
-                    <button
+                    <Button
                         onClick={(e) => {
                             e.stopPropagation();
                             onClick?.();
                         }}
-                        className="px-6 py-2.5 bg-gray-900 text-white text-sm font-medium rounded-lg hover:bg-gray-800 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-900"
+                        variant="primary"
                     >
                         Voir
-                    </button>
+                    </Button>
                 </div>
             </div>
         </article>

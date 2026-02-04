@@ -292,6 +292,9 @@ export const getTasks = async (req: Request, res: Response): Promise<void> => {
           ...task,
           assignees,
           comments,
+          _count: {
+            comments: comments.length,
+          },
         };
       })
     );

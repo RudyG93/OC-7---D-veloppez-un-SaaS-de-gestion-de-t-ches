@@ -77,8 +77,8 @@ const sizeStyles: Record<ButtonSize, string> = {
  *
  * @example
  * // Bouton orange (CTA)
- * <Button variant="orange" leftIcon={<AIIcon />}>
- *   IA
+ * <Button variant="orange">
+ *   Action
  * </Button>
  */
 const Button = forwardRef<HTMLButtonElement, ButtonProps>(

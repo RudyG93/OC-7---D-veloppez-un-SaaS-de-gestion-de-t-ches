@@ -3,7 +3,6 @@
  *
  * Ce module fournit des hooks React pour :
  * - useTasks : Récupérer les tâches d'un projet
- * - useTask : Récupérer une tâche spécifique
  * - useCreateTask : Créer une tâche
  * - useUpdateTask : Modifier une tâche
  * - useDeleteTask : Supprimer une tâche
@@ -14,7 +13,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import {
     getTasksApi,
-    getTaskApi,
     createTaskApi,
     updateTaskApi,
     deleteTaskApi,
@@ -65,54 +63,6 @@ export function useTasks(projectId: string) {
     }, [fetchTasks]);
 
     return { tasks, isLoading, error, refetch: fetchTasks };
-}
-
-// ============================================================================
-// Hook tâche unique
-// ============================================================================
-
-/**
- * Hook pour récupérer une tâche spécifique
- *
- * @param projectId - Identifiant du projet
- * @param taskId - Identifiant de la tâche
- * @returns Objet avec la tâche et les états
- *
- * @example
- * const { task, isLoading, error, refetch } = useTask('project-id', 'task-id');
- */
-export function useTask(projectId: string, taskId: string) {
-    const [task, setTask] = useState<Task | null>(null);
-    const [isLoading, setIsLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
-
-    const fetchTask = useCallback(async () => {
-        if (!projectId || !taskId) {
-            setTask(null);
-            setIsLoading(false);
-            return;
-        }
-
-        setIsLoading(true);
-        setError(null);
-
-        try {
-            const response = await getTaskApi(projectId, taskId);
-            setTask(response.data?.task ?? null);
-        } catch (err) {
-            const message = err instanceof Error ? err.message : 'Erreur de chargement';
-            setError(message);
-            setTask(null);
-        } finally {
-            setIsLoading(false);
-        }
-    }, [projectId, taskId]);
-
-    useEffect(() => {
-        fetchTask();
-    }, [fetchTask]);
-
-    return { task, isLoading, error, refetch: fetchTask };
 }
 
 // ============================================================================

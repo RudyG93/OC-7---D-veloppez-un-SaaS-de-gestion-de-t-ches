@@ -2,34 +2,21 @@
 
 import type { Task, TaskStatus } from '@/types';
 import StatusTag from '../tasks/StatusTag';
+import { formatDate } from '@/lib/utils';
+import { KANBAN_COLUMNS } from '@/lib/taskConstants';
 
 interface KanbanBoardProps {
     tasks: Task[];
     onTaskClick?: (task: Task) => void;
 }
 
-const columns: { status: TaskStatus; title: string }[] = [
-    { status: 'TODO', title: 'À faire' },
-    { status: 'IN_PROGRESS', title: 'En cours' },
-    { status: 'DONE', title: 'Terminée' },
-];
-
 export default function KanbanBoard({ tasks, onTaskClick }: KanbanBoardProps) {
     const getTasksByStatus = (status: TaskStatus) =>
         tasks.filter((task) => task.status === status);
 
-    const formatDate = (dateString: string | null) => {
-        if (!dateString) return null;
-        const date = new Date(dateString);
-        return date.toLocaleDateString('fr-FR', {
-            day: 'numeric',
-            month: 'long',
-        });
-    };
-
     return (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {columns.map((column) => {
+            {KANBAN_COLUMNS.map((column) => {
                 const columnTasks = getTasksByStatus(column.status);
 
                 return (
@@ -55,7 +42,7 @@ export default function KanbanBoard({ tasks, onTaskClick }: KanbanBoardProps) {
                                         role="listitem"
                                         tabIndex={0}
                                         aria-label={`Tâche: ${task.title}`}
-                                        className="bg-white border border-gray-200 rounded-xl p-4 hover:shadow-md transition-shadow cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#E65C00] focus:ring-offset-2"
+                                        className="card-interactive p-4"
                                         onClick={() => onTaskClick?.(task)}
                                         onKeyDown={(e) => {
                                             if (e.key === 'Enter' || e.key === ' ') {

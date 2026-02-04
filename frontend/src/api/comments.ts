@@ -11,8 +11,7 @@
  * Toutes les fonctions nécessitent une authentification via JWT.
  */
 
-import { API_BASE_URL } from '@/lib/api';
-import { cookieUtils } from '@/lib/cookies';
+import { API_BASE_URL, authHeaders } from '@/lib/api';
 import type {
     ApiResponse,
     CommentsResponse,
@@ -20,19 +19,6 @@ import type {
     CreateCommentRequest,
     UpdateCommentRequest,
 } from '@/types';
-
-// ============================================================================
-// Configuration
-// ============================================================================
-
-/**
- * Génère les headers d'authentification pour les requêtes API
- * @returns Headers avec authentification Bearer JWT
- */
-const authHeaders = () => ({
-    'Content-Type': 'application/json',
-    Authorization: `Bearer ${cookieUtils.getToken()}`,
-});
 
 // ============================================================================
 // Fonctions de lecture (GET)

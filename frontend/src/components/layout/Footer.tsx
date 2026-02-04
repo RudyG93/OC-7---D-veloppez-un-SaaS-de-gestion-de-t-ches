@@ -1,6 +1,18 @@
+/**
+ * Pied de page de l'application
+ *
+ * Affiche le logo et le copyright de l'application.
+ *
+ * @module components/layout/Footer
+ */
+
 'use client';
 
 import Image from 'next/image';
+
+// ============================================================================
+// Composant
+// ============================================================================
 
 export default function Footer() {
     const currentYear = new Date().getFullYear();

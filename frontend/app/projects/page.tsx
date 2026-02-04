@@ -1,3 +1,9 @@
+/**
+ * Page de liste des projets
+ * 
+ * Affiche tous les projets auxquels l'utilisateur a accès.
+ * Permet de créer un nouveau projet via une modale.
+ */
 "use client";
 
 import { useState } from "react";
@@ -7,7 +13,7 @@ import Footer from "@/components/layout/Footer";
 import Alert from "@/components/ui/Alert";
 import Spinner from "@/components/ui/Spinner";
 import Button from "@/components/ui/Button";
-import { PlusIcon } from "@/components/ui/IconButton";
+import { PlusIcon } from "@/components/ui/Icons";
 import { useProjects } from "@/hooks/useProjects";
 import { useProfile } from "@/hooks/useAuth";
 import ProjectCard from "@/components/projects/ProjectCard";

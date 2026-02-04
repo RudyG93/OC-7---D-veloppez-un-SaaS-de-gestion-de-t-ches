@@ -51,7 +51,7 @@ const PASSWORD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d@$!%*?&]{8,}$/;
  * @param email - Chaîne à valider
  * @returns true si l'email est valide
  */
-export const isValidEmail = (email: string): boolean => {
+const isValidEmail = (email: string): boolean => {
     return EMAIL_REGEX.test(email);
 };
 
@@ -60,7 +60,7 @@ export const isValidEmail = (email: string): boolean => {
  * @param password - Mot de passe à valider
  * @returns true si le mot de passe est valide
  */
-export const isValidPassword = (password: string): boolean => {
+const isValidPassword = (password: string): boolean => {
     return PASSWORD_REGEX.test(password);
 };
 
