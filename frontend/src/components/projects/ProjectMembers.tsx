@@ -27,7 +27,7 @@ export function ProjectMembers({ project, user }: ProjectMembersProps) {
               size="md"
               alt={user.name || user.email}
             />
-            <span className="px-3 py-1 rounded-full text-xs font-medium bg-[#FFE8D9] text-[#D3590B]">
+            <span className="px-3 py-1 rounded-full text-xs font-medium bg-primary-light text-primary">
               {getRoleLabel(project.userRole as ProjectRole)}
             </span>
           </div>

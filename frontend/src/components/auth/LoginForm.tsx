@@ -38,11 +38,11 @@ export default function LoginForm() {
     return (
         <div className="w-full">
             {/* Titre */}
-            <h1 className="text-4xl font-bold text-[#E65C00] mb-10">Connexion</h1>
+            <h1 className="text-3xl font-heading font-bold text-accent mb-10 text-center">Connexion</h1>
 
             {/* Message d'erreur API */}
             {apiError && (
-                <div className="mb-6">
+                <div className="mb-4">
                     <Alert
                         type="error"
                         message={apiError}
@@ -50,7 +50,7 @@ export default function LoginForm() {
                 </div>
             )}
 
-            <form onSubmit={handleSubmit} className="space-y-6">
+            <form onSubmit={handleSubmit} className="space-y-5">
                 <Input
                     label="Email"
                     id="email"
@@ -60,7 +60,7 @@ export default function LoginForm() {
                     onChange={(e) => setEmail(e.target.value)}
                     error={getFieldError('email')}
                     required
-                    inputSize="lg"
+                    inputSize="auth"
                 />
 
                 <Input
@@ -72,42 +72,31 @@ export default function LoginForm() {
                     onChange={(e) => setPassword(e.target.value)}
                     error={getFieldError('password')}
                     required
-                    inputSize="lg"
+                    inputSize="auth"
                 />
 
                 {/* Bouton de connexion */}
-                <Button
-                    type="submit"
-                    disabled={isLoading}
-                    variant="primary"
-                    fullWidth
-                    rounded
-                    size="lg"
-                >
-                    {isLoading ? 'Connexion...' : 'Se connecter'}
-                </Button>
+                <div className="pt-2 flex justify-center">
+                    <Button
+                        type="submit"
+                        disabled={isLoading}
+                        variant="primary"
+                        size="auth"
+                    >
+                        {isLoading ? 'Connexion...' : 'Se connecter'}
+                    </Button>
+                </div>
 
                 {/* Mot de passe oublié */}
                 <div className="text-center">
                     <Link
                         href="#"
-                        className="text-[#E65C00] hover:underline text-sm"
+                        className="text-accent underline text-sm"
                     >
                         Mot de passe oublié?
                     </Link>
                 </div>
             </form>
-
-            {/* Lien vers inscription */}
-            <div className="mt-16 text-sm">
-                <span className="text-gray-600">Pas encore de compte ? </span>
-                <Link
-                    href="/register"
-                    className="text-[#E65C00] hover:underline font-medium"
-                >
-                    Créer un compte
-                </Link>
-            </div>
         </div>
     );
 }

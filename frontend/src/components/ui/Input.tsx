@@ -5,7 +5,7 @@ import { forwardRef, InputHTMLAttributes, useId } from 'react';
 /**
  * Tailles disponibles pour l'input
  */
-type InputSize = 'sm' | 'md' | 'lg';
+type InputSize = 'sm' | 'md' | 'lg' | 'auth';
 
 /**
  * Props du composant Input
@@ -30,6 +30,7 @@ const sizeStyles: Record<InputSize, string> = {
     sm: 'px-3 py-1.5 text-xs',
     md: 'px-4 py-2 text-sm',
     lg: 'px-4 py-3 text-sm',
+    auth: 'h-12 px-4 text-base',
 };
 
 /**
@@ -68,7 +69,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
         const errorId = `${inputId}-error`;
         const helperId = `${inputId}-helper`;
 
-        const baseStyles = 'w-full border rounded-lg bg-white transition-colors focus:outline-none focus:ring-2 focus:ring-[#D3590B] focus:border-transparent';
+        const baseStyles = 'w-full border rounded-lg bg-white transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent';
         
         const borderStyle = error ? 'border-red-500' : 'border-gray-300';
 

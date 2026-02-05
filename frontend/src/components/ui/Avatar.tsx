@@ -49,7 +49,7 @@ const sizeClasses: Record<AvatarSize, { container: string; text: string }> = {
  */
 const variantClasses: Record<AvatarVariant, string> = {
     gray: 'bg-gray-200 text-gray-700',
-    orange: 'bg-[#D3590B] text-white',
+    orange: 'bg-primary text-white',
     blue: 'bg-blue-100 text-blue-700',
     green: 'bg-green-100 text-green-700',
     purple: 'bg-purple-100 text-purple-700',

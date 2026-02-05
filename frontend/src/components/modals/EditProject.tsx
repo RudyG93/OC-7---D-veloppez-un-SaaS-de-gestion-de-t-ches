@@ -254,7 +254,7 @@ export default function EditProjectModal({ project, onClose, onSuccess }: EditPr
                                         <p className="text-xs text-gray-500">{project.owner.email}</p>
                                     </div>
                                 </div>
-                                <span className="px-2 py-1 bg-[#FFE8D9] text-[#D3590B] text-xs font-medium rounded">
+                                <span className="px-2 py-1 bg-primary-light text-primary text-xs font-medium rounded">
                                     Administrateur
                                 </span>
                             </div>

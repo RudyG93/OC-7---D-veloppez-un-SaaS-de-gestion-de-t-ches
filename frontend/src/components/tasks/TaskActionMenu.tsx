@@ -58,7 +58,7 @@ export function TaskActionMenu({
         <div className="relative">
             <button
                 onClick={() => setShowMenu(!showMenu)}
-                className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#D3590B]"
+                className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
                 aria-label="Actions de la tâche"
                 aria-expanded={showMenu}
                 aria-haspopup="menu"

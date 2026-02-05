@@ -49,7 +49,7 @@ export default function TaskList({
                             placeholder="Rechercher une tâche"
                             value={searchValue}
                             onChange={(e) => onSearchChange?.(e.target.value)}
-                            className="w-64 pl-10 pr-4 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#E65C00] focus:border-transparent"
+                            className="w-64 pl-10 pr-4 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent"
                         />
                         <svg
                             className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400"

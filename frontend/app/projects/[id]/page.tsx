@@ -109,7 +109,7 @@ export default function ProjectDetailPage() {
   // État de chargement
   if (isLoading) {
     return (
-      <div className="min-h-screen flex flex-col bg-white">
+      <div className="min-h-screen flex flex-col bg-background">
         <Header />
         <main className="flex-1 flex items-center justify-center">
           <Spinner size="lg" label="Chargement du projet" />
@@ -122,12 +122,12 @@ export default function ProjectDetailPage() {
   // Projet non trouvé
   if (!project) {
     return (
-      <div className="min-h-screen flex flex-col bg-white">
+      <div className="min-h-screen flex flex-col bg-background">
         <Header />
         <main className="flex-1 flex flex-col items-center justify-center">
           <h1 className="text-2xl font-bold text-gray-900 mb-2">Projet introuvable</h1>
           <p className="text-gray-500 mb-4">Ce projet n&apos;existe pas ou a été supprimé.</p>
-          <Link href="/projects" className="text-[#D3590B] hover:underline">
+          <Link href="/projects" className="text-primary hover:underline">
             Retour aux projets
           </Link>
         </main>
@@ -137,7 +137,7 @@ export default function ProjectDetailPage() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-white">
+    <div className="min-h-screen flex flex-col bg-background">
       <Header />
 
       <main id="main-content" className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8">
@@ -163,7 +163,7 @@ export default function ProjectDetailPage() {
           <div className="flex items-center gap-3 flex-1">
             <h1 className="text-xl font-bold text-gray-900">{project.name}</h1>
             {permissions.canEditProject && (
-              <Button onClick={() => setShowEditProjectModal(true)} variant="ghost" size="sm" className="text-gray-500 hover:text-[#D3590B]">
+              <Button onClick={() => setShowEditProjectModal(true)} variant="ghost" size="sm" className="text-gray-500 hover:text-primary">
                 Modifier
               </Button>
             )}
@@ -204,7 +204,7 @@ export default function ProjectDetailPage() {
               <select
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value as TaskStatus | "ALL")}
-                className="px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#D3590B] focus:border-transparent"
+                className="px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
               >
                 <option value="ALL">Tous les statuts</option>
                 <option value="TODO">À faire</option>

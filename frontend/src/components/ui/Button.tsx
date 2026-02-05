@@ -10,7 +10,7 @@ type ButtonVariant = 'primary' | 'secondary' | 'danger' | 'ghost' | 'outline' | 
 /**
  * Tailles disponibles pour le bouton
  */
-type ButtonSize = 'sm' | 'md' | 'lg';
+type ButtonSize = 'sm' | 'md' | 'lg' | 'auth';
 
 /**
  * Props du composant Button
@@ -45,7 +45,7 @@ const variantStyles: Record<ButtonVariant, string> = {
     danger: 'bg-red-600 text-white hover:bg-red-700 focus:ring-red-500',
     ghost: 'bg-transparent text-gray-700 hover:bg-gray-100 focus:ring-gray-300',
     outline: 'bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 focus:ring-gray-300',
-    orange: 'bg-[#D3590B] text-white hover:bg-[#B84D0A] focus:ring-[#D3590B]',
+    orange: 'bg-primary text-white hover:bg-primary-hover focus:ring-primary',
 };
 
 /**
@@ -55,6 +55,7 @@ const sizeStyles: Record<ButtonSize, string> = {
     sm: 'px-3 py-1.5 text-xs',
     md: 'px-4 py-2 text-sm',
     lg: 'px-6 py-2.5 text-sm',
+    auth: 'h-12 px-15 text-base',
 };
 
 /**

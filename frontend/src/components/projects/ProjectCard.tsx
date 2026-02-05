@@ -53,7 +53,7 @@ export default function ProjectCard({ project, user }: ProjectCardProps) {
                 </div>
                 <div className="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
                     <div
-                        className="h-full bg-[#E65C00] rounded-full transition-all duration-300"
+                        className="h-full bg-accent rounded-full transition-all duration-300"
                         style={{ width: `${progressPercent}%` }}
                     />
                 </div>
@@ -82,13 +82,13 @@ export default function ProjectCard({ project, user }: ProjectCardProps) {
                     email={user.email}
                     size="md"
                     variant="orange"
-                    className="bg-[#FFE8D9] text-black"
+                    className="bg-primary-light text-black"
                     alt={`Vous: ${user.name || user.email}`}
                 />
 
                 {/* Rôle de l'utilisateur connecté */}
                 {project.userRole && (
-                    <span className="px-3 py-1 rounded-full text-xs font-medium bg-[#FFE8D9] text-[#E65C00]">
+                    <span className="px-3 py-1 rounded-full text-xs font-medium bg-primary-light text-accent">
                         {getRoleLabel(project.userRole)}
                     </span>
                 )}

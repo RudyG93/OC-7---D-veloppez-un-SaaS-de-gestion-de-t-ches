@@ -5,6 +5,7 @@
  * Redirige vers le dashboard après une inscription réussie.
  */
 import { Metadata } from "next";
+import Link from "next/link";
 import AuthLayout from "@/components/auth/AuthLayout";
 import RegisterForm from "@/components/auth/RegisterForm";
 
@@ -15,7 +16,21 @@ export const metadata: Metadata = {
 
 export default function RegisterPage() {
     return (
-        <AuthLayout imageSrc="/register.jpg" imageAlt="Bureau avec fournitures">
+        <AuthLayout 
+            imageSrc="/register.jpg" 
+            imageAlt="Bureau avec fournitures"
+            bottomLink={
+                <>
+                    <span>Déjà inscrit ? </span>
+                    <Link
+                        href="/login"
+                        className="text-accent underline"
+                    >
+                        Se connecter
+                    </Link>
+                </>
+            }
+        >
             <RegisterForm />
         </AuthLayout>
     );

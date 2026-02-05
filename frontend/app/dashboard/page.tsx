@@ -70,7 +70,7 @@ export default function DashboardPage() {
     };
 
     return (
-        <div className="min-h-screen flex flex-col bg-white">
+        <div className="min-h-screen flex flex-col bg-background">
             <Header />
 
             <main id="main-content" className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8">
@@ -108,7 +108,7 @@ export default function DashboardPage() {
                         onClick={() => setView('list')}
                         variant="ghost"
                         rounded
-                        className={view === 'list' ? 'bg-orange-100 text-[#E65C00] hover:bg-orange-100' : ''}
+                        className={view === 'list' ? 'bg-primary-light text-accent hover:bg-primary-light' : ''}
                         leftIcon={
                             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
@@ -122,7 +122,7 @@ export default function DashboardPage() {
                         onClick={() => setView('kanban')}
                         variant="ghost"
                         rounded
-                        className={view === 'kanban' ? 'bg-orange-100 text-[#E65C00] hover:bg-orange-100' : ''}
+                        className={view === 'kanban' ? 'bg-primary-light text-accent hover:bg-primary-light' : ''}
                         leftIcon={
                             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />

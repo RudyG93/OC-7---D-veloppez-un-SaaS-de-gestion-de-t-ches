@@ -113,7 +113,7 @@ export default function ProfilePage() {
     // État de chargement
     if (isLoading) {
         return (
-            <div className="min-h-screen flex flex-col bg-white">
+            <div className="min-h-screen flex flex-col bg-background">
                 <Header />
                 <main className="flex-1 flex items-center justify-center">
                     <Spinner size="lg" label="Chargement du profil" />
@@ -126,12 +126,12 @@ export default function ProfilePage() {
     // État d'erreur ou utilisateur non trouvé
     if (error || !user) {
         return (
-            <div className="min-h-screen flex flex-col bg-white">
+            <div className="min-h-screen flex flex-col bg-background">
                 <Header />
                 <main className="flex-1 flex items-center justify-center">
                     <div className="text-center">
                         <p className="text-red-600 mb-4">Impossible de charger le profil</p>
-                        <a href="/login" className="text-[#D3590B] hover:underline">
+                        <a href="/login" className="text-primary hover:underline">
                             Retour à la connexion
                         </a>
                     </div>
@@ -142,7 +142,7 @@ export default function ProfilePage() {
     }
 
     return (
-        <div className="min-h-screen flex flex-col bg-white">
+        <div className="min-h-screen flex flex-col bg-background">
             <Header />
 
             <main id="main-content" className="flex-1 max-w-2xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8">

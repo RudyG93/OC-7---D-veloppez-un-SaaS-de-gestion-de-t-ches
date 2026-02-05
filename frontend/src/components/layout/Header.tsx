@@ -68,7 +68,7 @@ export default function Header() {
                             className={`flex items-center gap-2 px-5 py-3 rounded-md text-sm font-medium transition-colors cursor-pointer ${
                                 isActive('/dashboard')
                                     ? 'bg-gray-900 text-white'
-                                    : 'text-[#D3590B] hover:bg-orange-50'
+                                    : 'text-primary hover:bg-primary-light'
                             }`}
                         >
                             <svg
@@ -92,7 +92,7 @@ export default function Header() {
                             className={`flex items-center gap-2 px-5 py-3 rounded-md text-sm font-medium transition-colors cursor-pointer ${
                                 pathname.startsWith('/projects')
                                     ? 'bg-gray-900 text-white'
-                                    : 'text-[#D3590B] hover:bg-orange-50'
+                                    : 'text-primary hover:bg-primary-light'
                             }`}
                         >
                             <svg
@@ -120,7 +120,7 @@ export default function Header() {
                                 aria-expanded={isMenuOpen}
                                 aria-haspopup="true"
                                 aria-label="Menu utilisateur"
-                                className="w-10 h-10 rounded-full bg-[#D3590B] flex items-center justify-center text-sm font-semibold text-white hover:bg-[#B84D0A] transition-colors cursor-pointer focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#D3590B]"
+                                className="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-sm font-semibold text-white hover:bg-primary-hover transition-colors cursor-pointer focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
                             >
                                 {userInitials}
                             </button>
