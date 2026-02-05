@@ -112,12 +112,14 @@ export function CommentSection({ projectId, taskId, isVisible, onCommentAdded }:
 
             {/* Formulaire de nouveau commentaire */}
             <form onSubmit={handleSubmit} className="flex gap-2">
+                <label htmlFor="new-comment" className="sr-only">Nouveau commentaire</label>
                 <input
+                    id="new-comment"
                     type="text"
                     value={newComment}
                     onChange={(e) => setNewComment(e.target.value)}
                     placeholder="Ajouter un commentaire..."
-                    className="flex-1 px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#D3590B] focus:border-transparent"
+                    className="flex-1 px-3 py-2 border border-gray-200 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-[#D3590B] focus:border-transparent"
                 />
                 <Button
                     type="submit"

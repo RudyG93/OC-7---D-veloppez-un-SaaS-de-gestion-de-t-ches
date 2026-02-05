@@ -24,7 +24,7 @@ export default function AuthLayout({
     imageAlt = "Image décorative" 
 }: AuthLayoutProps) {
     return (
-        <main className="min-h-screen flex">
+        <main id="main-content" className="min-h-screen flex">
             {/* Section formulaire */}
             <div className="w-full lg:w-1/2 flex flex-col justify-center px-8 lg:px-16 xl:px-24 bg-white">
                 <div className="max-w-md mx-auto w-full">

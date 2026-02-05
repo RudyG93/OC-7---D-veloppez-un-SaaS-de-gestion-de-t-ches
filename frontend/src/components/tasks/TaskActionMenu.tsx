@@ -58,28 +58,36 @@ export function TaskActionMenu({
         <div className="relative">
             <button
                 onClick={() => setShowMenu(!showMenu)}
-                className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg"
+                className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#D3590B]"
                 aria-label="Actions de la tâche"
+                aria-expanded={showMenu}
+                aria-haspopup="menu"
             >
-                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                <svg className="w-5 h-5" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20">
                     <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
                 </svg>
             </button>
 
             {showMenu && (
-                <div className="absolute right-0 top-10 bg-white border border-gray-200 rounded-lg shadow-lg py-1 min-w-35 z-10">
+                <div
+                    role="menu"
+                    aria-orientation="vertical"
+                    className="absolute right-0 top-10 bg-white border border-gray-200 rounded-lg shadow-lg py-1 min-w-35 z-10"
+                >
                     {canEdit && (
                         <>
                             <button
                                 onClick={handleEdit}
+                                role="menuitem"
                                 className="dropdown-item"
                             >
                                 Modifier
                             </button>
-                            <hr className="my-1 border-gray-200" />
+                            <hr className="my-1 border-gray-200" aria-hidden="true" />
                             {currentStatus !== 'TODO' && (
                                 <button
                                     onClick={() => handleStatusChange('TODO')}
+                                    role="menuitem"
                                     className="dropdown-item"
                                 >
                                     → À faire
@@ -88,6 +96,7 @@ export function TaskActionMenu({
                             {currentStatus !== 'IN_PROGRESS' && (
                                 <button
                                     onClick={() => handleStatusChange('IN_PROGRESS')}
+                                    role="menuitem"
                                     className="dropdown-item"
                                 >
                                     → En cours
@@ -96,6 +105,7 @@ export function TaskActionMenu({
                             {currentStatus !== 'DONE' && (
                                 <button
                                     onClick={() => handleStatusChange('DONE')}
+                                    role="menuitem"
                                     className="dropdown-item"
                                 >
                                     → Terminée
@@ -105,9 +115,10 @@ export function TaskActionMenu({
                     )}
                     {canDelete && (
                         <>
-                            {canEdit && <hr className="my-1 border-gray-200" />}
+                            {canEdit && <hr className="my-1 border-gray-200" aria-hidden="true" />}
                             <button
                                 onClick={handleDelete}
+                                role="menuitem"
                                 className="dropdown-item-danger"
                             >
                                 Supprimer

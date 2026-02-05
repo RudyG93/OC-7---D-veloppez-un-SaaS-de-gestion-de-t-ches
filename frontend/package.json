@@ -9,7 +9,6 @@
     "lint": "eslint"
   },
   "dependencies": {
-    "daisyui": "^5.5.14",
     "js-cookie": "^3.0.5",
     "next": "16.1.1",
     "react": "19.2.3",

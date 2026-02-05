@@ -140,7 +140,7 @@ export default function ProjectDetailPage() {
     <div className="min-h-screen flex flex-col bg-white">
       <Header />
 
-      <main className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8">
+      <main id="main-content" className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8">
         {/* Messages de feedback */}
         {loadError && <Alert type="error" message={loadError} className="mb-6" />}
         {actionError && (

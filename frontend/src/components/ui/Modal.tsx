@@ -14,7 +14,7 @@
 
 'use client';
 
-import { useEffect, useRef, type ReactNode } from 'react';
+import { useEffect, useRef, useCallback, type ReactNode } from 'react';
 
 // ============================================================================
 // Types
@@ -45,6 +45,9 @@ const MAX_WIDTH_CLASSES = {
     xl: 'max-w-xl',
 } as const;
 
+/** Sélecteur des éléments focusables */
+const FOCUSABLE_SELECTOR = 'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
+
 // ============================================================================
 // Composant
 // ============================================================================
@@ -67,19 +70,56 @@ export default function Modal({
     ariaLabelledBy,
 }: ModalProps) {
     const modalRef = useRef<HTMLDivElement>(null);
+    const previousActiveElement = useRef<HTMLElement | null>(null);
     const titleId = ariaLabelledBy || `modal-title-${title.toLowerCase().replace(/\s+/g, '-')}`;
 
-    // Gestion du clavier (Escape pour fermer)
-    useEffect(() => {
-        const handleKeyDown = (e: KeyboardEvent) => {
-            if (e.key === 'Escape') {
-                onClose();
+    // Focus trap : garder le focus dans la modale
+    const handleKeyDown = useCallback((e: KeyboardEvent) => {
+        if (e.key === 'Escape') {
+            onClose();
+            return;
+        }
+
+        if (e.key === 'Tab' && modalRef.current) {
+            const focusableElements = modalRef.current.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR);
+            const firstElement = focusableElements[0];
+            const lastElement = focusableElements[focusableElements.length - 1];
+
+            if (e.shiftKey) {
+                // Shift+Tab : aller au dernier élément si on est sur le premier
+                if (document.activeElement === firstElement) {
+                    e.preventDefault();
+                    lastElement?.focus();
+                }
+            } else {
+                // Tab : aller au premier élément si on est sur le dernier
+                if (document.activeElement === lastElement) {
+                    e.preventDefault();
+                    firstElement?.focus();
+                }
             }
-        };
+        }
+    }, [onClose]);
+
+    // Gestion du focus et des événements clavier
+    useEffect(() => {
+        // Sauvegarder l'élément actif et focus la modale
+        previousActiveElement.current = document.activeElement as HTMLElement;
+        
+        // Focus le premier élément focusable de la modale
+        const focusableElements = modalRef.current?.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR);
+        if (focusableElements && focusableElements.length > 0) {
+            focusableElements[0].focus();
+        }
 
         document.addEventListener('keydown', handleKeyDown);
-        return () => document.removeEventListener('keydown', handleKeyDown);
-    }, [onClose]);
+        
+        return () => {
+            document.removeEventListener('keydown', handleKeyDown);
+            // Restaurer le focus à l'élément précédent
+            previousActiveElement.current?.focus();
+        };
+    }, [handleKeyDown]);
 
     // Fermer en cliquant sur l'overlay
     const handleOverlayClick = (e: React.MouseEvent) => {

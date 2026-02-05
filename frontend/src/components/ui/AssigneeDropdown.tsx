@@ -114,7 +114,17 @@ export function AssigneeDropdown({
             <button
                 type="button"
                 onClick={() => setShowDropdown(!showDropdown)}
+                onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        setShowDropdown(!showDropdown);
+                    }
+                    if (e.key === 'Escape' && showDropdown) {
+                        setShowDropdown(false);
+                    }
+                }}
                 aria-expanded={showDropdown}
+                aria-haspopup="listbox"
                 aria-labelledby={labelId}
                 className="dropdown-trigger"
             >
@@ -131,12 +141,22 @@ export function AssigneeDropdown({
 
             {/* Dropdown */}
             {showDropdown && (
-                <div className="dropdown-menu">
+                <div 
+                    role="listbox"
+                    aria-label="Sélection d'assignés"
+                    className="dropdown-menu"
+                    onKeyDown={(e) => {
+                        if (e.key === 'Escape') {
+                            setShowDropdown(false);
+                        }
+                    }}
+                >
                     {/* Recherche */}
                     <div className="p-2 border-b border-gray-100">
                         <input
                             type="text"
                             placeholder="Rechercher par nom ou email..."
+                            aria-label="Rechercher un utilisateur par nom ou email"
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                             className="form-input-search w-full"
@@ -169,16 +189,18 @@ export function AssigneeDropdown({
                     )}
 
                     {/* Résultats de recherche */}
-                    <div className="max-h-40 overflow-y-auto">
+                    <div className="max-h-40 overflow-y-auto" role="group" aria-label="Résultats de recherche">
                         {isSearching ? (
-                            <p className="p-3 text-sm text-gray-500 text-center">Recherche...</p>
+                            <p className="p-3 text-sm text-gray-500 text-center" aria-live="polite">Recherche...</p>
                         ) : searchResults.length > 0 ? (
                             searchResults.map((user) => (
                                 <button
                                     key={user.id}
                                     type="button"
+                                    role="option"
+                                    aria-selected="false"
                                     onClick={() => handleAddAssignee(user)}
-                                    className="w-full px-3 py-2 text-left hover:bg-gray-50 flex items-center gap-2"
+                                    className="w-full px-3 py-2 text-left hover:bg-gray-50 focus:bg-gray-50 focus:outline-none flex items-center gap-2"
                                 >
                                     <div className="w-6 h-6 rounded-full bg-gray-200 flex items-center justify-center text-xs font-medium">
                                         {(user.name || user.email).charAt(0).toUpperCase()}
