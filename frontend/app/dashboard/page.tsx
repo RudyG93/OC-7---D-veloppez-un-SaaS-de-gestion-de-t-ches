@@ -7,14 +7,13 @@
  */
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import Alert from '@/components/ui/Alert';
 import Spinner from '@/components/ui/Spinner';
 import Button from '@/components/ui/Button';
-import { PlusIcon } from '@/components/ui/Icons';
 import TaskList from '@/components/dashboard/ViewList';
 import KanbanBoard from '@/components/dashboard/ViewKanban';
 import { useProfile } from '@/hooks/useAuth';
@@ -65,9 +64,9 @@ export default function DashboardPage() {
     }, [sortedTasks, searchQuery]);
 
     /** Redirige vers la page du projet lors du clic sur une tâche */
-    const handleTaskClick = (task: Task) => {
+    const handleTaskClick = useCallback((task: Task) => {
         router.push(`/projects/${task.projectId}`);
-    };
+    }, [router]);
 
     return (
         <div className="min-h-screen flex flex-col bg-background">
@@ -77,7 +76,7 @@ export default function DashboardPage() {
                 {/* En-tête du dashboard */}
                 <div className="flex items-start justify-between mb-8">
                     <div>
-                        <h1 className="text-2xl font-bold text-gray-900">Tableau de bord</h1>
+                        <h1 className="text-2xl font-heading font-semibold">Tableau de bord</h1>
                         <p className="text-gray-500 mt-1">
                             Bonjour {user?.name || 'Utilisateur'}, voici un aperçu de vos
                             projets et tâches
@@ -87,9 +86,8 @@ export default function DashboardPage() {
                     <Button
                         onClick={() => setShowCreateModal(true)}
                         variant="primary"
-                        leftIcon={<PlusIcon />}
                     >
-                        Créer un projet
+                        + Créer un projet
                     </Button>
                 </div>
 
@@ -107,10 +105,10 @@ export default function DashboardPage() {
                     <Button
                         onClick={() => setView('list')}
                         variant="ghost"
-                        rounded
-                        className={view === 'list' ? 'bg-primary-light text-accent hover:bg-primary-light' : ''}
+                        aria-pressed={view === 'list'}
+                        className={` rounded-lg ${view === 'list' ? 'bg-primary-light text-accent border-transparent' : 'bg-white border-transparent'}`}
                         leftIcon={
-                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                             </svg>
                         }
@@ -121,10 +119,10 @@ export default function DashboardPage() {
                     <Button
                         onClick={() => setView('kanban')}
                         variant="ghost"
-                        rounded
-                        className={view === 'kanban' ? 'bg-primary-light text-accent hover:bg-primary-light' : ''}
+                        aria-pressed={view === 'kanban'}
+                        className={` rounded-lg ${view === 'kanban' ? 'bg-primary-light text-accent border-transparent' : 'bg-white border-transparent'}`}
                         leftIcon={
-                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                             </svg>
                         }

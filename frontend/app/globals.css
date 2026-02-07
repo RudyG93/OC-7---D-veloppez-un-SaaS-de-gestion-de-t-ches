@@ -7,6 +7,8 @@
 @theme inline {
   --color-background: #F9FAFB;
   --color-foreground: #000;
+  --color-heading: #1F1F1F;
+  --color-sub: #6B7280;
   --color-primary: #D3590B;
   --color-primary-hover: #B84D0A;
   --color-primary-light: #FFE8D9;

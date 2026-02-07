@@ -25,7 +25,7 @@ export default function TaskList({
     onSearchChange,
 }: TaskListProps) {
     return (
-        <div className="bg-gray-50 rounded-xl p-6">
+        <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
             {/* En-tête */}
             <div className="flex items-start justify-between mb-6">
                 <div>
@@ -89,7 +89,7 @@ export default function TaskList({
                     <p>{emptyMessage}</p>
                 </div>
             ) : (
-                <div className="space-y-3">
+                <div role="list" className="space-y-3">
                     {tasks.map((task) => (
                         <TaskCard
                             key={task.id}
