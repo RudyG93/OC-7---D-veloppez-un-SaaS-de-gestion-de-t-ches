@@ -27,11 +27,11 @@ export default function Footer() {
                         alt="Abricot"
                         width={80}
                         height={24}
-                        className="opacity-60"
+                        className=""
                     />
 
                     {/* Copyright */}
-                    <span className="text-sm text-gray-500">
+                    <span className="text-sm font-body">
                         Abricot {currentYear}
                     </span>
                 </div>

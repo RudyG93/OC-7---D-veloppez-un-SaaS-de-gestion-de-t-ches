@@ -83,7 +83,6 @@ export default function ProjectCard({ project, user }: ProjectCardProps) {
                     size="md"
                     variant="orange"
                     className="bg-primary-light text-black"
-                    alt={`Vous: ${user.name || user.email}`}
                 />
 
                 {/* Rôle de l'utilisateur connecté */}
@@ -103,7 +102,6 @@ export default function ProjectCard({ project, user }: ProjectCardProps) {
                             name={member.user.name}
                             email={member.user.email}
                             size="md"
-                            alt={member.user.name || member.user.email}
                         />
                     ))}
 

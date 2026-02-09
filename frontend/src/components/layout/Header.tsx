@@ -16,7 +16,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { useProfile, useLogout } from '@/hooks/useAuth';
-import { getInitials } from '@/lib/utils';
+import Avatar from '@/components/ui/Avatar';
 
 // ============================================================================
 // Composant
@@ -40,9 +40,6 @@ export default function Header() {
         return () => document.removeEventListener('mousedown', handleClickOutside);
     }, []);
 
-    /** Initiales de l'utilisateur pour l'avatar */
-    const userInitials = getInitials(user?.name || '', user?.email);
-
     /** Vérifie si un chemin est actif */
     const isActive = (path: string) => pathname === path;
 
@@ -65,49 +62,37 @@ export default function Header() {
                     <nav className="flex items-center space-x-1">
                         <Link
                             href="/dashboard"
-                            className={`flex items-center gap-2 px-5 py-3 rounded-md text-sm font-medium transition-colors cursor-pointer ${
+                            className={`flex items-center justify-center gap-3 w-48 py-4 rounded-md text-sm font-body transition-colors cursor-pointer ${
                                 isActive('/dashboard')
                                     ? 'bg-gray-900 text-white'
                                     : 'text-primary hover:bg-primary-light'
                             }`}
                         >
-                            <svg
-                                className="w-4 h-4"
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
-                            >
-                                <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth={2}
-                                    d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"
-                                />
-                            </svg>
+                            <Image
+                                src={isActive('/dashboard') ? '/btn-act-dashboard.png' : '/btn-dashboard.png'}
+                                alt=""
+                                width={16}
+                                height={16}
+                                aria-hidden="true"
+                            />
                             Tableau de bord
                         </Link>
 
                         <Link
                             href="/projects"
-                            className={`flex items-center gap-2 px-5 py-3 rounded-md text-sm font-medium transition-colors cursor-pointer ${
+                            className={`flex items-center justify-center gap-3 w-48 py-4 rounded-md text-sm font-body transition-colors cursor-pointer ${
                                 pathname.startsWith('/projects')
                                     ? 'bg-gray-900 text-white'
                                     : 'text-primary hover:bg-primary-light'
                             }`}
                         >
-                            <svg
-                                className="w-4 h-4"
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
-                            >
-                                <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth={2}
-                                    d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"
-                                />
-                            </svg>
+                            <Image
+                                src={pathname.startsWith('/projects') ? '/btn-act-project.png' : '/btn-project.png'}
+                                alt=""
+                                width={20}
+                                height={20}
+                                aria-hidden="true"
+                            />
                             Projets
                         </Link>
                     </nav>
@@ -120,9 +105,14 @@ export default function Header() {
                                 aria-expanded={isMenuOpen}
                                 aria-haspopup="true"
                                 aria-label="Menu utilisateur"
-                                className="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-sm font-semibold text-white hover:bg-primary-hover transition-colors cursor-pointer focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
+                                className="cursor-pointer focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary rounded-full"
                             >
-                                {userInitials}
+                                <Avatar
+                                    name={user?.name}
+                                    email={user?.email}
+                                    size="xl"
+                                    variant="light"
+                                />
                             </button>
 
                             {/* Dropdown menu */}
@@ -133,10 +123,10 @@ export default function Header() {
                                     className="absolute right-0 mt-2 w-52 bg-white rounded-lg shadow-lg border border-gray-100 z-50"
                                 >
                                     <div className="px-4 py-3 border-b border-gray-100">
-                                        <p className="font-medium text-gray-900">
+                                        <p className="font-medium">
                                             {user?.name || 'Utilisateur'}
                                         </p>
-                                        <p className="text-xs text-gray-500">
+                                        <p className="text-xs text-sub">
                                             {user?.email}
                                         </p>
                                     </div>

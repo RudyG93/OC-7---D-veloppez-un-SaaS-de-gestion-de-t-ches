@@ -25,7 +25,6 @@ export function ProjectMembers({ project, user }: ProjectMembersProps) {
               name={user.name}
               email={user.email}
               size="md"
-              alt={user.name || user.email}
             />
             <span className="px-3 py-1 rounded-full text-xs font-medium bg-primary-light text-primary">
               {getRoleLabel(project.userRole as ProjectRole)}
@@ -39,7 +38,6 @@ export function ProjectMembers({ project, user }: ProjectMembersProps) {
                 name={member.user.name}
                 email={member.user.email}
                 size="md"
-                alt={member.user.name || member.user.email}
               />
               <span className="text-sm text-gray-700">
                 {member.user.name || member.user.email}
