@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import type { Task, TaskStatus, ProjectRole } from '@/types';
 import StatusTag from '@/components/tasks/StatusTag';
 import { CommentSection } from '@/components/tasks/CommentSection';
@@ -33,20 +34,20 @@ function AssigneeList({ assignees }: { assignees: Task['assignees'] }) {
     if (!assignees || assignees.length === 0) return null;
 
     return (
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 font-body text-sub">
             <span>Assigné à :</span>
             <div className="flex items-center gap-1">
                 {assignees.map((assignee) => (
                     <div
                         key={assignee.id}
-                        className="flex items-center gap-1 px-2 py-0.5 bg-gray-100 rounded-full"
+                        className="flex items-center gap-1 px-2 py-0.5 bg-primary-grey rounded-full"
                     >
                         <Avatar
                             name={assignee.user.name}
                             email={assignee.user.email}
                             size="xs"
                         />
-                        <span className="text-xs">
+                        <span className="text-xs font-body">
                             {assignee.user.name || assignee.user.email.split('@')[0]}
                         </span>
                     </div>
@@ -77,39 +78,27 @@ export default function TaskProject({
     const canDelete = canDeleteTask(userRole, userId, task.creatorId);
 
     return (
-        <div className="p-4 hover:bg-gray-50 transition-colors">
+        <div className="p-4 hover:bg-background transition-colors">
             <div className="flex items-start gap-4">
                 <div className="flex-1">
                     {/* Titre + Status */}
                     <div className="flex items-center gap-3 mb-2">
-                        <h3 className="font-medium text-gray-900">{task.title}</h3>
+                        <h3 className="font-heading font-medium text-heading">{task.title}</h3>
                         <StatusTag status={task.status} />
                     </div>
 
                     {/* Description */}
                     {task.description && (
-                        <p className="text-sm text-gray-500 mb-3">{task.description}</p>
+                        <p className="text-sm font-body text-sub mb-3">{task.description}</p>
                     )}
 
                     {/* Métadonnées */}
-                    <div className="flex items-center gap-6 text-sm text-gray-500">
+                    <div className="flex items-center gap-6 text-sm font-body text-sub">
                         {task.dueDate && (
                             <div className="flex items-center gap-2">
                                 <span>Échéance :</span>
                                 <span className="flex items-center gap-1">
-                                    <svg
-                                        className="w-4 h-4"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        viewBox="0 0 24 24"
-                                    >
-                                        <path
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            strokeWidth={2}
-                                            d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-                                        />
-                                    </svg>
+                                    <Image src="/ico-date.png" alt="" width={16} height={16} aria-hidden="true" />
                                     {formatDate(task.dueDate)}
                                 </span>
                             </div>
@@ -121,7 +110,7 @@ export default function TaskProject({
                     {/* Bouton commentaires (expandable) */}
                     <button
                         onClick={onToggle}
-                        className="flex items-center gap-2 mt-3 text-sm text-gray-500 hover:text-gray-700"
+                        className="flex items-center gap-2 mt-3 text-sm font-body text-sub hover:text-heading transition-colors"
                     >
                         <span>Commentaires ({task._count?.comments ?? 0})</span>
                         <svg

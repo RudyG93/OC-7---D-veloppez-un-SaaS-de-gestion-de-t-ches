@@ -1,6 +1,6 @@
 /**
  * Page de liste des projets
- * 
+ *
  * Affiche tous les projets auxquels l'utilisateur a accès.
  * Permet de créer un nouveau projet via une modale.
  */
@@ -28,19 +28,25 @@ export default function ProjectsPage() {
     <div className="min-h-screen flex flex-col bg-background">
       <Header />
 
-      <main id="main-content" className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8">
+      <main
+        id="main-content"
+        className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8"
+      >
         {/* En-tête */}
-        <div className="flex items-start justify-between mb-8">
+        <div className="flex items-start justify-between mb-10">
           <div>
-            <h1 className="text-2xl font-heading font-bold text-heading">Mes projets</h1>
-            <p className="text-sub font-body mt-1">
-              Gérez vos projets et collaborez avec votre équipe
+            <h1 className="text-2xl font-heading font-semibold text-heading">
+              Mes projets
+            </h1>
+            <p className="font-body mt-3 mb-6">
+              Gérez vos projets
             </p>
           </div>
 
           <Button
             onClick={() => setShowCreateModal(true)}
             variant="primary"
+            size="proj"
           >
             + Créer un projet
           </Button>
@@ -56,19 +62,6 @@ export default function ProjectsPage() {
           </div>
         ) : (projects ?? []).length === 0 ? (
           <div className="text-center py-20">
-            <svg
-              className="w-16 h-16 mx-auto mb-4 text-gray-300"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={1.5}
-                d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"
-              />
-            </svg>
             <h3 className="text-lg font-heading font-medium text-heading mb-1">
               Aucun projet
             </h3>

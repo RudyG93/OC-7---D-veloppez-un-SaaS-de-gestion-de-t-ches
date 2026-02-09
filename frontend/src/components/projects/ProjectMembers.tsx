@@ -8,30 +8,32 @@ interface ProjectMembersProps {
 }
 
 export function ProjectMembers({ project, user }: ProjectMembersProps) {
+  const memberCount = (project.members?.length ?? 0) + 1;
 
   return (
-    <>
-      <div className="bg-gray-50 rounded-xl p-6 mb-8">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="font-semibold text-gray-900">Contributeurs</h2>
-          <span className="text-sm text-gray-500">
-            {(project.members?.length ?? 0) + 1} personnes
-          </span>
+    <div className="bg-background rounded-xl p-6 mb-8">
+      <div className="flex items-center justify-between">
+        {/* Titre + compteur */}
+        <div className="flex items-baseline gap-2">
+          <h2 className="font-heading font-semibold text-heading">Contributeurs</h2>
+          <span className="text-sm font-body text-sub">{memberCount} personnes</span>
         </div>
+
+        {/* Avatars et noms */}
         <div className="flex items-center gap-3 flex-wrap">
-          {/* Connected User */}
+          {/* Utilisateur connecté */}
           <div className="flex items-center gap-2">
             <Avatar
               name={user.name}
               email={user.email}
               size="md"
             />
-            <span className="px-3 py-1 rounded-full text-xs font-medium bg-primary-light text-primary">
+            <span className="px-3 py-1 rounded-full text-xs font-body font-medium bg-primary-light text-primary">
               {getRoleLabel(project.userRole as ProjectRole)}
             </span>
           </div>
 
-          {/* Membres */}
+          {/* Autres membres */}
           {project.members?.map((member) => (
             <div key={member.id} className="flex items-center gap-2">
               <Avatar
@@ -39,13 +41,13 @@ export function ProjectMembers({ project, user }: ProjectMembersProps) {
                 email={member.user.email}
                 size="md"
               />
-              <span className="text-sm text-gray-700">
+              <span className="px-3 py-1 rounded-full text-xs font-body font-medium bg-primary-grey text-heading">
                 {member.user.name || member.user.email}
               </span>
             </div>
           ))}
         </div>
       </div>
-    </>
+    </div>
   );
 }

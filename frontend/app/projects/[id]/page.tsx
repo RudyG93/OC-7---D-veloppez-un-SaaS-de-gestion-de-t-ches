@@ -11,6 +11,7 @@ import { useState, useMemo } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import Header from "@/components/layout/Header";
+import Image from "next/image";
 import Footer from "@/components/layout/Footer";
 import Alert from "@/components/ui/Alert";
 import Spinner from "@/components/ui/Spinner";
@@ -25,6 +26,7 @@ import EditTaskModal from "@/components/modals/EditTask";
 import EditProjectModal from "@/components/modals/EditProject";
 import { getProjectPermissions } from "@/lib/permissions";
 import { ProjectMembers } from "@/components/projects/ProjectMembers";
+import SearchInput from "@/components/ui/SearchInput";
 
 export default function ProjectDetailPage() {
   const params = useParams();
@@ -33,6 +35,7 @@ export default function ProjectDetailPage() {
 
   // États de l'interface
   const [statusFilter, setStatusFilter] = useState<TaskStatus | "ALL">("ALL");
+  const [searchQuery, setSearchQuery] = useState("");
   const [showTaskModal, setShowTaskModal] = useState(false);
   const [showEditProjectModal, setShowEditProjectModal] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
@@ -61,15 +64,23 @@ export default function ProjectDetailPage() {
    * Les tâches sans date apparaissent en dernier
    */
   const filteredTasks = useMemo(() => {
+    const query = searchQuery.toLowerCase().trim();
     return (tasks ?? [])
       .filter((task) => statusFilter === "ALL" || task.status === statusFilter)
+      .filter((task) => {
+        if (!query) return true;
+        return (
+          task.title.toLowerCase().includes(query) ||
+          task.description?.toLowerCase().includes(query)
+        );
+      })
       .sort((a, b) => {
         if (!a.dueDate && !b.dueDate) return 0;
         if (!a.dueDate) return 1;
         if (!b.dueDate) return -1;
         return new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime();
       });
-  }, [tasks, statusFilter]);
+  }, [tasks, statusFilter, searchQuery]);
 
   /** Supprime le projet et redirige vers la liste */
   const handleDeleteProject = async () => {
@@ -125,9 +136,9 @@ export default function ProjectDetailPage() {
       <div className="min-h-screen flex flex-col bg-background">
         <Header />
         <main className="flex-1 flex flex-col items-center justify-center">
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">Projet introuvable</h1>
-          <p className="text-gray-500 mb-4">Ce projet n&apos;existe pas ou a été supprimé.</p>
-          <Link href="/projects" className="text-primary hover:underline">
+          <h1 className="text-2xl font-heading font-bold text-heading mb-2">Projet introuvable</h1>
+          <p className="text-sub font-body mb-4">Ce projet n&apos;existe pas ou a été supprimé.</p>
+          <Link href="/projects" className="text-primary font-body hover:underline">
             Retour aux projets
           </Link>
         </main>
@@ -151,77 +162,90 @@ export default function ProjectDetailPage() {
         )}
 
         {/* En-tête du projet */}
-        <div className="flex items-center gap-4 mb-4">
+        <div className="flex items-start gap-4 mb-8">
           {/* Bouton retour */}
-          <Link href="/projects" className="p-2 hover:bg-gray-100 rounded-full transition-colors">
-            <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-            </svg>
+          <Link href="/projects" className="group shrink-0 p-2 hover:bg-background rounded-full transition-colors">
+            <Image src="/back.png" alt="Retour à la liste des projets" width={50} height={50} className="group-focus-visible:hidden" />
+            <Image src="/back-focus.png" alt="" width={50} height={50} className="hidden group-focus-visible:block" aria-hidden="true" />
           </Link>
 
-          {/* Titre et actions */}
-          <div className="flex items-center gap-3 flex-1">
-            <h1 className="text-xl font-bold text-gray-900">{project.name}</h1>
-            {permissions.canEditProject && (
-              <Button onClick={() => setShowEditProjectModal(true)} variant="ghost" size="sm" className="text-gray-500 hover:text-primary">
-                Modifier
-              </Button>
-            )}
-            {permissions.canDeleteProject && (
-              <Button onClick={() => setShowDeleteConfirm(true)} variant="ghost" size="sm" className="text-red-500 hover:text-red-700">
-                Supprimer
-              </Button>
+          {/* Titre, actions et description */}
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-3">
+              <h1 className="text-2xl font-heading font-semibold text-heading">{project.name}</h1>
+              {permissions.canEditProject && (
+                <Link href="" className="text-sm text-primary underline font-body" onClick={() => setShowEditProjectModal(true)}>
+                  Modifier
+                </Link>
+              )}
+              {permissions.canDeleteProject && (
+                <Link href="" className="text-sm text-red-500 font-body" onClick={() => setShowDeleteConfirm(true)}>
+                  Supprimer
+                </Link>
+              )}
+            </div>
+
+            {/* Description du projet */}
+            {project.description && (
+              <p className="text-base font-body text-sub mt-2">{project.description}</p>
             )}
           </div>
 
           {/* Bouton création tâche */}
           {permissions.canCreateTask && (
-            <Button onClick={() => setShowTaskModal(true)} variant="primary">
+            <Button onClick={() => setShowTaskModal(true)} variant="primary" size="proj" className="shrink-0">
               Créer une tâche
             </Button>
           )}
         </div>
 
-        {/* Description du projet */}
-        {project.description && (
-          <p className="text-gray-600 mb-6 ml-12">{project.description}</p>
-        )}
-
         {/* Membres du projet */}
         {user && <ProjectMembers project={project} user={user} />}
 
         {/* Section des tâches */}
-        <div className="bg-white border border-gray-200 rounded-xl">
+        <div className="bg-white border border-primary-grey rounded-xl">
           {/* En-tête avec filtre */}
-          <div className="p-6 border-b border-gray-200">
+          <div className="p-6 border-b border-primary-grey">
             <div className="flex items-center justify-between">
               <div>
-                <h2 className="font-semibold text-gray-900">Tâches</h2>
-                <p className="text-sm text-gray-500">Par date d&apos;échéance</p>
+                <h2 className="font-heading font-semibold text-heading">Tâches</h2>
+                <p className="text-sm font-body text-sub">Par date d&apos;échéance</p>
               </div>
-              
-              {/* Filtre par statut */}
-              <select
-                value={statusFilter}
-                onChange={(e) => setStatusFilter(e.target.value as TaskStatus | "ALL")}
-                className="px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
-              >
-                <option value="ALL">Tous les statuts</option>
-                <option value="TODO">À faire</option>
-                <option value="IN_PROGRESS">En cours</option>
-                <option value="DONE">Terminée</option>
-              </select>
+
+              <div className="flex items-center gap-3">
+                {/* Filtre par statut */}
+                <select
+                  value={statusFilter}
+                  onChange={(e) => setStatusFilter(e.target.value as TaskStatus | "ALL")}
+                  className="form-input-search h-10"
+                >
+                  <option value="ALL">Statut</option>
+                  <option value="TODO">À faire</option>
+                  <option value="IN_PROGRESS">En cours</option>
+                  <option value="DONE">Terminée</option>
+                </select>
+
+                {/* Recherche */}
+                <SearchInput
+                  inputId="project-task-search"
+                  label="Rechercher une tâche"
+                  placeholder="Rechercher une tâche"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-64 h-10"
+                />
+              </div>
             </div>
           </div>
 
           {/* Liste des tâches */}
-          <div className="divide-y divide-gray-100">
+          <div className="divide-y divide-primary-grey">
             {filteredTasks.length === 0 ? (
               <div className="p-12 text-center">
-                <svg className="w-12 h-12 mx-auto mb-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-12 h-12 mx-auto mb-4 text-primary-grey" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                 </svg>
-                <p className="text-gray-500">Aucune tâche</p>
+                <p className="font-body text-sub">Aucune tâche</p>
               </div>
             ) : (
               filteredTasks.map((task) => (
@@ -261,8 +285,8 @@ export default function ProjectDetailPage() {
       {showDeleteConfirm && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
           <div className="bg-white rounded-xl p-6 w-full max-w-md mx-4">
-            <h3 className="text-lg font-bold text-gray-900 mb-2">Supprimer le projet</h3>
-            <p className="text-gray-600 mb-6">
+            <h3 className="text-lg font-heading font-bold text-heading mb-2">Supprimer le projet</h3>
+            <p className="font-body text-sub mb-6">
               Êtes-vous sûr de vouloir supprimer ce projet ? Cette action est irréversible.
             </p>
             <div className="flex gap-3">

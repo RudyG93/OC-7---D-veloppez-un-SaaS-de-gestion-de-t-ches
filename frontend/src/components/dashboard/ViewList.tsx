@@ -2,6 +2,7 @@
 
 import type { Task } from '@/types';
 import TaskCard from '../tasks/TaskCardList';
+import SearchInput from '@/components/ui/SearchInput';
 
 interface TaskListProps {
     tasks: Task[];
@@ -39,33 +40,14 @@ export default function TaskList({
 
                 {/* Recherche */}
                 {showSearch && (
-                    <div className="relative">
-                        <label htmlFor="task-search" className="sr-only">
-                            Rechercher une tâche
-                        </label>
-                        <input
-                            id="task-search"
-                            type="text"
-                            placeholder="Rechercher une tâche"
-                            value={searchValue}
-                            onChange={(e) => onSearchChange?.(e.target.value)}
-                            className="form-input-search w-80 h-14 p-4"
-                        />
-                        <svg
-                            className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-sub"
-                            aria-hidden="true"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                        >
-                            <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                            />
-                        </svg>
-                    </div>
+                    <SearchInput
+                        inputId="dashboard-task-search"
+                        label="Rechercher une tâche"
+                        placeholder="Rechercher une tâche"
+                        value={searchValue}
+                        onChange={(e) => onSearchChange?.(e.target.value)}
+                        className="w-80 h-14 px-4"
+                    />
                 )}
             </div>
 
