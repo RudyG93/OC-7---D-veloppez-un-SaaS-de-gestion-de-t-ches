@@ -44,7 +44,7 @@ export default function Header() {
     const isActive = (path: string) => pathname === path;
 
     return (
-        <header className="bg-white border-b border-gray-100">
+        <header className="bg-white border-b border-gray-100 mb-10">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex items-center justify-between h-16">
                     {/* Logo */}
@@ -111,7 +111,7 @@ export default function Header() {
                                     name={user?.name}
                                     email={user?.email}
                                     size="xl"
-                                    variant="light"
+                                    variant={isActive('/profile') ? 'orange' : 'light'}
                                 />
                             </button>
 

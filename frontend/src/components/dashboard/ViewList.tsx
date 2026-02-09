@@ -25,15 +25,15 @@ export default function TaskList({
     onSearchChange,
 }: TaskListProps) {
     return (
-        <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+        <div className="bg-white rounded-xl p-10 shadow-sm border border-primary-grey mt-10">
             {/* En-tête */}
-            <div className="flex items-start justify-between mb-6">
+            <div className="flex items-start justify-between mb-10">
                 <div>
                     {title && (
-                        <h2 className="text-lg font-semibold text-gray-900">{title}</h2>
+                        <h2 className="text-lg font-heading font-semibold text-heading">{title}</h2>
                     )}
                     {subtitle && (
-                        <p className="text-sm text-gray-500 mt-0.5">{subtitle}</p>
+                        <p className="text-sm font-body text-sub mt-0.5">{subtitle}</p>
                     )}
                 </div>
 
@@ -49,10 +49,10 @@ export default function TaskList({
                             placeholder="Rechercher une tâche"
                             value={searchValue}
                             onChange={(e) => onSearchChange?.(e.target.value)}
-                            className="w-64 pl-10 pr-4 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent"
+                            className="form-input-search w-80 h-14 p-4"
                         />
                         <svg
-                            className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400"
+                            className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-sub"
                             aria-hidden="true"
                             fill="none"
                             stroke="currentColor"
@@ -71,9 +71,9 @@ export default function TaskList({
 
             {/* Liste des tâches */}
             {tasks.length === 0 ? (
-                <div className="text-center py-12 text-gray-500">
+                <div className="text-center py-12 font-body text-sub">
                     <svg
-                        className="w-12 h-12 mx-auto mb-4 text-gray-300"
+                        className="w-12 h-12 mx-auto mb-4 text-primary-grey"
                         aria-hidden="true"
                         fill="none"
                         stroke="currentColor"

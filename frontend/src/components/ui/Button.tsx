@@ -10,7 +10,7 @@ type ButtonVariant = 'primary' | 'secondary' | 'danger' | 'ghost' | 'outline' | 
 /**
  * Tailles disponibles pour le bouton
  */
-type ButtonSize = 'sm' | 'md' | 'lg' | 'auth';
+type ButtonSize = 'sm' | 'md' | 'lg' | 'auth' | 'proj';
 
 /**
  * Props du composant Button
@@ -40,12 +40,12 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
  * Classes de style par variante
  */
 const variantStyles: Record<ButtonVariant, string> = {
-    primary: 'bg-gray-900 text-white hover:bg-gray-800 focus:ring-gray-900',
-    secondary: 'bg-gray-200 text-gray-700 hover:bg-gray-300 focus:ring-gray-400',
+    primary: 'bg-heading text-white hover:bg-heading/90 focus:ring-heading',
+    secondary: 'bg-primary-grey text-sub hover:bg-gray-300 focus:ring-primary-grey',
     danger: 'bg-red-600 text-white hover:bg-red-700 focus:ring-red-500',
-    ghost: 'bg-transparent text-gray-700 hover:bg-gray-100 focus:ring-gray-300',
-    outline: 'bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 focus:ring-gray-300',
-    orange: 'bg-primary text-white hover:bg-primary-hover focus:ring-primary',
+    ghost: 'bg-transparent text-sub hover:bg-gray-100 focus:ring-primary-grey',
+    outline: 'bg-white border border-primary-grey text-sub hover:bg-gray-50 focus:ring-primary-grey',
+    orange: 'bg-primary text-white hover:bg-accent focus:ring-primary',
 };
 
 /**
@@ -55,7 +55,8 @@ const sizeStyles: Record<ButtonSize, string> = {
     sm: 'px-3 py-1.5 text-xs',
     md: 'px-4 py-2 text-sm',
     lg: 'px-6 py-2.5 text-sm',
-    auth: 'h-12 px-15 text-base',
+    auth: 'h-12 px-15 text-sm',
+    proj: 'h-12 px-8 text-sm',
 };
 
 /**
@@ -66,12 +67,12 @@ const sizeStyles: Record<ButtonSize, string> = {
  * <Button variant="primary">Créer un projet</Button>
  *
  * @example
- * // Bouton avec icône et chargement
+ * // Bouton avec icône PNG et chargement
  * <Button
  *   variant="primary"
  *   isLoading={isSubmitting}
  *   loadingText="Création..."
- *   leftIcon={<PlusIcon />}
+ *   leftIcon={<Image src="/ico-plus.png" alt="" width={16} height={16} />}
  * >
  *   Créer
  * </Button>
@@ -101,6 +102,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         ref
     ) => {
         const isDisabled = disabled || isLoading;
+        const isDarkBg = variant === 'primary' || variant === 'danger' || variant === 'orange';
 
         const baseStyles = [
             'inline-flex items-center justify-center gap-2',
@@ -128,15 +130,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
                         <div
                             role="status"
                             aria-label={loadingText || 'Chargement en cours'}
-                            className="spinner spinner-sm"
-                            style={{
-                                borderTopColor: variant === 'primary' || variant === 'danger' || variant === 'orange'
-                                    ? 'white'
-                                    : 'currentColor',
-                                borderColor: variant === 'primary' || variant === 'danger' || variant === 'orange'
-                                    ? 'rgba(255,255,255,0.3)'
-                                    : 'rgba(0,0,0,0.1)',
-                            }}
+                            className={`spinner spinner-sm ${isDarkBg ? 'spinner-invert' : ''}`}
                         />
                         {loadingText && <span>{loadingText}</span>}
                     </>

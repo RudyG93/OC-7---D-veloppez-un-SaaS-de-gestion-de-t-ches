@@ -10,15 +10,15 @@ interface StatusTagProps {
 const statusConfig: Record<TaskStatus, { label: string; className: string }> = {
     TODO: {
         label: 'À faire',
-        className: 'bg-red-100 text-red-600 border-red-200',
+        className: 'bg-[#FFE0E0] text-[#EF4444] border-[#FFE0E0]',
     },
     IN_PROGRESS: {
         label: 'En cours',
-        className: 'bg-yellow-100 text-yellow-700 border-yellow-200',
+        className: 'bg-[#FFF0D7] text-[#E08D00] border-[#FFF0D7]',
     },
     DONE: {
         label: 'Terminée',
-        className: 'bg-green-100 text-green-600 border-green-200',
+        className: 'bg-[#F1FFF7] text-[#27AE60] border-[#F1FFF7]',
     },
     CANCELLED: {
         label: 'Annulée',

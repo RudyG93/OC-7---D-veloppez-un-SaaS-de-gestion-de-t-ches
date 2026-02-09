@@ -36,16 +36,16 @@ const sizeClasses: Record<AvatarSize, { container: string; text: string }> = {
     sm: { container: 'w-6 h-6', text: 'text-[10px]' },
     md: { container: 'w-8 h-8', text: 'text-xs' },
     lg: { container: 'w-10 h-10', text: 'text-sm' },
-    xl: { container: 'w-12 h-12', text: 'text-sm' },
+    xl: { container: 'w-12 h-12', text: 'text-xs' },
 };
 
 /**
  * Classes de couleur pour l'avatar
  */
 const variantClasses: Record<AvatarVariant, string> = {
-    gray: 'bg-gray-200 text-gray-700',
+    gray: 'bg-primary-grey',
     orange: 'bg-primary text-white',
-    light: 'bg-primary-light text-foreground',
+    light: 'bg-primary-light text-avatar',
 };
 
 /**

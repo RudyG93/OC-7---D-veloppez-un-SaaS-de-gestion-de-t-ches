@@ -9,8 +9,9 @@
   --color-foreground: #000;
   --color-heading: #1F1F1F;
   --color-sub: #6B7280;
+  --color-avatar: #0F0F0F;
   --color-primary: #D3590B;
-  --color-primary-hover: #B84D0A;
+  --color-primary-grey: #E5E7EB;
   --color-primary-light: #FFE8D9;
   --color-accent: #E65C00;
   --font-heading: 'Manrope', sans-serif;
@@ -69,6 +70,12 @@ label[for],
   width: 56px;
   height: 56px;
   border-width: 4px;
+}
+
+/** Spinner inversé pour fonds sombres (boutons primary, danger, orange) */
+.spinner-invert {
+  border-color: rgba(255, 255, 255, 0.3);
+  border-top-color: white;
 }
 
 @keyframes spinner-rotate {

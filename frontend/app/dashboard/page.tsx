@@ -9,6 +9,7 @@
 
 import { useState, useMemo, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import Alert from '@/components/ui/Alert';
@@ -77,7 +78,7 @@ export default function DashboardPage() {
                 <div className="flex items-start justify-between mb-8">
                     <div>
                         <h1 className="text-2xl font-heading font-semibold">Tableau de bord</h1>
-                        <p className="text-gray-500 mt-1">
+                        <p className="font-body mt-3 mb-6">
                             Bonjour {user?.name || 'Utilisateur'}, voici un aperçu de vos
                             projets et tâches
                         </p>
@@ -86,6 +87,7 @@ export default function DashboardPage() {
                     <Button
                         onClick={() => setShowCreateModal(true)}
                         variant="primary"
+                        size="proj"
                     >
                         + Créer un projet
                     </Button>
@@ -101,34 +103,32 @@ export default function DashboardPage() {
                 )}
 
                 {/* Tabs de vue */}
-                <div className="flex items-center gap-2 mb-6">
-                    <Button
+                <div className="flex items-center gap-2 mx-6">
+                    <button
                         onClick={() => setView('list')}
-                        variant="ghost"
                         aria-pressed={view === 'list'}
-                        className={` rounded-lg ${view === 'list' ? 'bg-primary-light text-accent border-transparent' : 'bg-white border-transparent'}`}
-                        leftIcon={
-                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                            </svg>
-                        }
+                        className={`rounded-lg cursor-pointer`}
                     >
-                        Liste
-                    </Button>
+                        <Image
+                            src={view === 'list' ? '/btn-focus-list.png' : '/btn-list.png'}
+                            alt="Vue liste"
+                            width={94}
+                            height={45}
+                        />
+                    </button>
 
-                    <Button
+                    <button
                         onClick={() => setView('kanban')}
-                        variant="ghost"
                         aria-pressed={view === 'kanban'}
-                        className={` rounded-lg ${view === 'kanban' ? 'bg-primary-light text-accent border-transparent' : 'bg-white border-transparent'}`}
-                        leftIcon={
-                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                            </svg>
-                        }
+                        className={`rounded-lg cursor-pointer`}
                     >
-                        Kanban
-                    </Button>
+                        <Image
+                            src={view === 'kanban' ? '/btn-focus-kanban.png' : '/btn-kanban.png'}
+                            alt="Vue kanban"
+                            width={111}
+                            height={45}
+                        />
+                    </button>
                 </div>
 
                 {/* Contenu selon la vue */}
@@ -152,16 +152,7 @@ export default function DashboardPage() {
                         )}
 
                         {view === 'kanban' && (
-                            <div>
-                                <div className="mb-4">
-                                    <h2 className="text-lg font-semibold text-gray-900">
-                                        Mes tâches
-                                    </h2>
-                                    <p className="text-sm text-gray-500">
-                                        Vue Kanban par statut
-                                    </p>
-                                </div>
-
+                            <div className='mt-10'>
                                 <KanbanBoard tasks={sortedTasks} onTaskClick={handleTaskClick} />
                             </div>
                         )}

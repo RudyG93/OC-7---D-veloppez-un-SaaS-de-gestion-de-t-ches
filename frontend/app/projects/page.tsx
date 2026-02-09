@@ -13,7 +13,6 @@ import Footer from "@/components/layout/Footer";
 import Alert from "@/components/ui/Alert";
 import Spinner from "@/components/ui/Spinner";
 import Button from "@/components/ui/Button";
-import { PlusIcon } from "@/components/ui/Icons";
 import { useProjects } from "@/hooks/useProjects";
 import { useProfile } from "@/hooks/useAuth";
 import ProjectCard from "@/components/projects/ProjectCard";
@@ -33,8 +32,8 @@ export default function ProjectsPage() {
         {/* En-tête */}
         <div className="flex items-start justify-between mb-8">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Mes projets</h1>
-            <p className="text-gray-500 mt-1">
+            <h1 className="text-2xl font-heading font-bold text-heading">Mes projets</h1>
+            <p className="text-sub font-body mt-1">
               Gérez vos projets et collaborez avec votre équipe
             </p>
           </div>
@@ -42,9 +41,8 @@ export default function ProjectsPage() {
           <Button
             onClick={() => setShowCreateModal(true)}
             variant="primary"
-            leftIcon={<PlusIcon />}
           >
-            Créer un projet
+            + Créer un projet
           </Button>
         </div>
 
@@ -71,10 +69,10 @@ export default function ProjectsPage() {
                 d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"
               />
             </svg>
-            <h3 className="text-lg font-medium text-gray-900 mb-1">
+            <h3 className="text-lg font-heading font-medium text-heading mb-1">
               Aucun projet
             </h3>
-            <p className="text-gray-500 mb-4">
+            <p className="text-sub font-body mb-4">
               Commencez par créer votre premier projet
             </p>
           </div>
