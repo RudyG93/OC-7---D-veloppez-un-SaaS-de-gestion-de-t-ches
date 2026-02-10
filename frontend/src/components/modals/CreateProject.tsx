@@ -12,6 +12,7 @@
 'use client';
 
 import { useState } from 'react';
+import Image from 'next/image';
 import Alert from '@/components/ui/Alert';
 import Button from '@/components/ui/Button';
 import Modal from '@/components/ui/Modal';
@@ -154,9 +155,13 @@ export default function CreateProjectModal({
                                     ? `${contributors.length} collaborateur${contributors.length > 1 ? 's' : ''}`
                                     : 'Choisir un ou plusieurs collaborateurs'}
                             </span>
-                            <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                            </svg>
+                            <Image
+                                src="/dropdown.png"
+                                alt=""
+                                width={16}
+                                height={16}
+                                aria-hidden="true"
+                            />
                         </button>
 
                         {showContributorDropdown && (

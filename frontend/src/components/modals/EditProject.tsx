@@ -12,11 +12,13 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
+import Image from 'next/image';
 import Alert from '@/components/ui/Alert';
 import Avatar from '@/components/ui/Avatar';
 import Button from '@/components/ui/Button';
 import Modal from '@/components/ui/Modal';
 import { useUpdateProject, useAddContributor, useRemoveContributor } from '@/hooks/useProjects';
+import { getDisplayName } from '@/lib/utils';
 import { useSearchUsers } from '@/hooks/useUsers';
 import { getRoleLabel } from '@/lib/permissions';
 import type { Project, ProjectMember, User } from '@/types';
@@ -230,12 +232,14 @@ export default function EditProjectModal({ project, onClose, onSuccess }: EditPr
                                 ? `${project.members.length} contributeur${project.members.length > 1 ? 's' : ''}`
                                 : 'Aucun contributeur'}
                         </span>
-                        <svg
-                            className={`w-4 h-4 text-gray-400 transition-transform ${showContributors ? 'rotate-180' : ''}`}
-                            fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                        >
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                        </svg>
+                        <Image
+                            src="/dropdown.png"
+                            alt=""
+                            width={16}
+                            height={16}
+                            aria-hidden="true"
+                            className={`transition-transform ${showContributors ? 'rotate-180' : ''}`}
+                        />
                     </button>
 
                     {/* Panneau des contributeurs */}
@@ -267,7 +271,7 @@ export default function EditProjectModal({ project, onClose, onSuccess }: EditPr
                                             <div className="flex items-center gap-3">
                                                 <Avatar name={member.user.name} email={member.user.email} size="md" />
                                                 <div>
-                                                    <p className="text-sm font-medium text-gray-900">{member.user.name || member.user.email}</p>
+                                                    <p className="text-sm font-medium text-gray-900">{getDisplayName(member.user.name, member.user.email)}</p>
                                                     <p className="text-xs text-gray-500">{member.user.email}</p>
                                                 </div>
                                             </div>

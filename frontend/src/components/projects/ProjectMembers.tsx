@@ -1,4 +1,5 @@
 import { getRoleLabel } from "@/lib/permissions";
+import { getDisplayName } from '@/lib/utils';
 import Avatar from '@/components/ui/Avatar';
 import type { Project, ProjectRole, User } from '@/types';
 
@@ -11,7 +12,7 @@ export function ProjectMembers({ project, user }: ProjectMembersProps) {
   const memberCount = (project.members?.length ?? 0) + 1;
 
   return (
-    <div className="bg-background rounded-xl p-6 mb-8">
+    <div className="bg-[#F3F4F6] rounded-xl p-6 mb-8">
       <div className="flex items-center justify-between">
         {/* Titre + compteur */}
         <div className="flex items-baseline gap-2">
@@ -27,6 +28,7 @@ export function ProjectMembers({ project, user }: ProjectMembersProps) {
               name={user.name}
               email={user.email}
               size="md"
+              variant="light"
             />
             <span className="px-3 py-1 rounded-full text-xs font-body font-medium bg-primary-light text-primary">
               {getRoleLabel(project.userRole as ProjectRole)}
@@ -42,7 +44,7 @@ export function ProjectMembers({ project, user }: ProjectMembersProps) {
                 size="md"
               />
               <span className="px-3 py-1 rounded-full text-xs font-body font-medium bg-primary-grey text-heading">
-                {member.user.name || member.user.email}
+                {getDisplayName(member.user.name, member.user.email)}
               </span>
             </div>
           ))}

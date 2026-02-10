@@ -1,13 +1,13 @@
 'use client';
 
 import Image from 'next/image';
-import type { Task, TaskStatus, ProjectRole } from '@/types';
+import type { Task, ProjectRole } from '@/types';
 import StatusTag from '@/components/tasks/StatusTag';
 import { CommentSection } from '@/components/tasks/CommentSection';
 import { TaskActionMenu } from '@/components/tasks/TaskActionMenu';
 import Avatar from '@/components/ui/Avatar';
 import { canDeleteTask, canEditTask } from '@/lib/permissions';
-import { formatDate } from '@/lib/utils';
+import { formatDate, getDisplayName } from '@/lib/utils';
 
 // ============================================================================
 // Types
@@ -18,43 +18,11 @@ interface TaskProjectProps {
     projectId: string;
     isExpanded: boolean;
     onToggle: () => void;
-    onStatusChange: (task: Task, status: TaskStatus) => void;
     onDelete: (taskId: string) => void;
     onEdit: () => void;
     onCommentAdded?: () => void;
     userRole?: ProjectRole;
     userId?: string;
-}
-
-// ============================================================================
-// Composant interne : Liste des assignés
-// ============================================================================
-
-function AssigneeList({ assignees }: { assignees: Task['assignees'] }) {
-    if (!assignees || assignees.length === 0) return null;
-
-    return (
-        <div className="flex items-center gap-2 font-body text-sub">
-            <span>Assigné à :</span>
-            <div className="flex items-center gap-1">
-                {assignees.map((assignee) => (
-                    <div
-                        key={assignee.id}
-                        className="flex items-center gap-1 px-2 py-0.5 bg-primary-grey rounded-full"
-                    >
-                        <Avatar
-                            name={assignee.user.name}
-                            email={assignee.user.email}
-                            size="xs"
-                        />
-                        <span className="text-xs font-body">
-                            {assignee.user.name || assignee.user.email.split('@')[0]}
-                        </span>
-                    </div>
-                ))}
-            </div>
-        </div>
-    );
 }
 
 // ============================================================================
@@ -66,89 +34,101 @@ export default function TaskProject({
     projectId,
     isExpanded,
     onToggle,
-    onStatusChange,
     onDelete,
     onEdit,
     onCommentAdded,
     userRole,
     userId,
 }: TaskProjectProps) {
-    // Vérifier les permissions pour cette tâche
     const canEdit = canEditTask(userRole);
     const canDelete = canDeleteTask(userRole, userId, task.creatorId);
 
     return (
-        <div className="p-4 hover:bg-background transition-colors">
+        <div className="rounded-xl border border-primary-grey bg-white p-5 mx-20 mt-8">
+            {/* En-tête : contenu + menu actions */}
             <div className="flex items-start gap-4">
-                <div className="flex-1">
+                <div className="flex-1 min-w-0">
                     {/* Titre + Status */}
-                    <div className="flex items-center gap-3 mb-2">
-                        <h3 className="font-heading font-medium text-heading">{task.title}</h3>
+                    <div className="flex items-center gap-3 mb-1">
+                        <h3 className="font-heading font-semibold text-heading">{task.title}</h3>
                         <StatusTag status={task.status} />
                     </div>
 
                     {/* Description */}
                     {task.description && (
-                        <p className="text-sm font-body text-sub mb-3">{task.description}</p>
+                        <p className="text-sm font-body text-sub mb-8">{task.description}</p>
                     )}
 
-                    {/* Métadonnées */}
-                    <div className="flex items-center gap-6 text-sm font-body text-sub">
-                        {task.dueDate && (
-                            <div className="flex items-center gap-2">
-                                <span>Échéance :</span>
-                                <span className="flex items-center gap-1">
-                                    <Image src="/ico-date.png" alt="" width={16} height={16} aria-hidden="true" />
-                                    {formatDate(task.dueDate)}
-                                </span>
+                    {/* Échéance */}
+                    {task.dueDate && (
+                        <div className="flex items-center gap-2 text-sm font-body text-heading mb-8">
+                            <span>Échéance :</span>
+                            <Image src="/ico-date.png" alt="" width={16} height={16} aria-hidden="true" />
+                            <span>{formatDate(task.dueDate)}</span>
+                        </div>
+                    )}
+
+                    {/* Assignés */}
+                    {task.assignees && task.assignees.length > 0 && (
+                        <div className="flex items-center gap-2 text-sm font-body text-sub">
+                            <span>Assigné à :</span>
+                            <div className="flex items-center gap-1">
+                                {task.assignees.map((assignee) => (
+                                    <div
+                                        key={assignee.id}
+                                        className="flex items-center gap-1 px-2 py-0.5"
+                                    >
+                                        <Avatar
+                                            name={assignee.user.name}
+                                            email={assignee.user.email}
+                                            size="xs"
+                                            variant="grey"
+                                        />
+                                        <span className="text-xs font-body text-sub bg-primary-grey rounded-full px-4 py-0.5">
+                                            {getDisplayName(assignee.user.name, assignee.user.email)}
+                                        </span>
+                                    </div>
+                                ))}
                             </div>
-                        )}
-
-                        <AssigneeList assignees={task.assignees} />
-                    </div>
-
-                    {/* Bouton commentaires (expandable) */}
-                    <button
-                        onClick={onToggle}
-                        className="flex items-center gap-2 mt-3 text-sm font-body text-sub hover:text-heading transition-colors"
-                    >
-                        <span>Commentaires ({task._count?.comments ?? 0})</span>
-                        <svg
-                            className={`w-4 h-4 transition-transform ${isExpanded ? 'rotate-180' : ''}`}
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                        >
-                            <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M5 15l7-7 7 7"
-                            />
-                        </svg>
-                    </button>
-
-                    {/* Section commentaires étendue */}
-                    {isExpanded && (
-                        <CommentSection
-                            projectId={projectId}
-                            taskId={task.id}
-                            isVisible={isExpanded}
-                            onCommentAdded={onCommentAdded}
-                        />
+                        </div>
                     )}
                 </div>
 
                 {/* Menu actions */}
                 <TaskActionMenu
-                    currentStatus={task.status}
                     canEdit={canEdit}
                     canDelete={canDelete}
                     onEdit={onEdit}
-                    onStatusChange={(status) => onStatusChange(task, status)}
                     onDelete={() => onDelete(task.id)}
                 />
             </div>
+
+            {/* Séparateur + Commentaires (pleine largeur) */}
+            <hr className="border-primary-grey mt-6 -mx-1" aria-hidden="true" />
+            <button
+                onClick={onToggle}
+                className="w-full flex items-center justify-between gap-2 mt-3 text-sm font-heading font-medium text-heading hover:text-accent transition-colors"
+            >
+                <span>Commentaires ({task._count?.comments ?? 0})</span>
+                <Image
+                    src="/dropdown.png"
+                    alt=""
+                    width={16}
+                    height={16}
+                    aria-hidden="true"
+                    className={`transition-transform ${isExpanded ? '' : 'rotate-180'}`}
+                />
+            </button>
+
+            {/* Section commentaires étendue */}
+            {isExpanded && (
+                <CommentSection
+                    projectId={projectId}
+                    taskId={task.id}
+                    isVisible={isExpanded}
+                    onCommentAdded={onCommentAdded}
+                />
+            )}
         </div>
     );
 }

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback, useId } from 'react';
+import Image from 'next/image';
 import { searchUsersApi } from '@/api/users';
 import { User } from '@/types';
 
@@ -131,12 +132,14 @@ export function AssigneeDropdown({
                 <span className={selectedAssignees.length > 0 ? 'text-gray-900 truncate' : 'text-gray-500'}>
                     {getDisplayText()}
                 </span>
-                <svg
-                    className={`w-4 h-4 text-gray-400 transition-transform shrink-0 ${showDropdown ? 'rotate-180' : ''}`}
-                    fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                >
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                </svg>
+                <Image
+                    src="/dropdown.png"
+                    alt=""
+                    width={16}
+                    height={16}
+                    aria-hidden="true"
+                    className={`shrink-0 transition-transform ${showDropdown ? 'rotate-180' : ''}`}
+                />
             </button>
 
             {/* Dropdown */}

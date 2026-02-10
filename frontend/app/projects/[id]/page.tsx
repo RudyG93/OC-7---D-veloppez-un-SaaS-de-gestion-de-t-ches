@@ -17,7 +17,7 @@ import Alert from "@/components/ui/Alert";
 import Spinner from "@/components/ui/Spinner";
 import Button from "@/components/ui/Button";
 import { useProject, useDeleteProject } from "@/hooks/useProjects";
-import { useTasks, useUpdateTask, useDeleteTask } from "@/hooks/useTasks";
+import { useTasks, useDeleteTask } from "@/hooks/useTasks";
 import { useProfile } from "@/hooks/useAuth";
 import TaskProject from "@/components/tasks/TaskProject";
 import type { Task, TaskStatus } from "@/types";
@@ -50,7 +50,6 @@ export default function ProjectDetailPage() {
   const { project, isLoading: projectLoading, error: projectError, refetch: refetchProject } = useProject(projectId);
   const { tasks, isLoading: tasksLoading, error: tasksError, refetch: refetchTasks } = useTasks(projectId);
   const { deleteProject, isLoading: isDeleting } = useDeleteProject();
-  const { updateTask } = useUpdateTask();
   const { deleteTask } = useDeleteTask();
   const { user } = useProfile();
 
@@ -90,18 +89,6 @@ export default function ProjectDetailPage() {
       router.push("/projects");
     } catch (error) {
       setActionError(error instanceof Error ? error.message : "Erreur lors de la suppression du projet");
-    }
-  };
-
-  /** Met à jour le statut d'une tâche */
-  const handleStatusChange = async (task: Task, newStatus: TaskStatus) => {
-    setActionError(null);
-    try {
-      await updateTask(projectId, task.id, { status: newStatus });
-      setSuccessMessage("Statut de la tâche mis à jour");
-      refetchTasks();
-    } catch (error) {
-      setActionError(error instanceof Error ? error.message : "Erreur lors de la mise à jour du statut");
     }
   };
 
@@ -205,25 +192,38 @@ export default function ProjectDetailPage() {
         {/* Section des tâches */}
         <div className="bg-white border border-primary-grey rounded-xl">
           {/* En-tête avec filtre */}
-          <div className="p-6 border-b border-primary-grey">
+          <div className="p-6">
             <div className="flex items-center justify-between">
               <div>
                 <h2 className="font-heading font-semibold text-heading">Tâches</h2>
                 <p className="text-sm font-body text-sub">Par date d&apos;échéance</p>
               </div>
 
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-4">
                 {/* Filtre par statut */}
-                <select
-                  value={statusFilter}
-                  onChange={(e) => setStatusFilter(e.target.value as TaskStatus | "ALL")}
-                  className="form-input-search h-10"
-                >
-                  <option value="ALL">Statut</option>
-                  <option value="TODO">À faire</option>
-                  <option value="IN_PROGRESS">En cours</option>
-                  <option value="DONE">Terminée</option>
-                </select>
+                <div className="relative flex items-center justify-center w-36 h-15 form-input-search cursor-pointer">
+                  <select
+                    value={statusFilter}
+                    onChange={(e) => setStatusFilter(e.target.value as TaskStatus | "ALL")}
+                    className={`absolute inset-0 w-full h-full opacity-0 cursor-pointer`}
+                  >
+                    <option value="ALL">Statut</option>
+                    <option value="TODO">À faire</option>
+                    <option value="IN_PROGRESS">En cours</option>
+                    <option value="DONE">Terminée</option>
+                  </select>
+                  <span className={`text-sm font-body pointer-events-none ${statusFilter === "ALL" ? "text-sub" : "text-heading"}`}>
+                    {statusFilter === "ALL" ? "Statut" : statusFilter === "TODO" ? "À faire" : statusFilter === "IN_PROGRESS" ? "En cours" : "Terminée"}
+                  </span>
+                  <Image
+                    src="/dropdown.png"
+                    alt=""
+                    width={16}
+                    height={16}
+                    aria-hidden="true"
+                    className="ml-2 pointer-events-none rotate-180"
+                  />
+                </div>
 
                 {/* Recherche */}
                 <SearchInput
@@ -232,14 +232,14 @@ export default function ProjectDetailPage() {
                   placeholder="Rechercher une tâche"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-64 h-10"
+                  className="w-72 h-15"
                 />
               </div>
             </div>
           </div>
 
           {/* Liste des tâches */}
-          <div className="divide-y divide-primary-grey">
+          <div className="space-y-4 pb-10">
             {filteredTasks.length === 0 ? (
               <div className="p-12 text-center">
                 <svg className="w-12 h-12 mx-auto mb-4 text-primary-grey" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -255,7 +255,6 @@ export default function ProjectDetailPage() {
                   projectId={projectId}
                   isExpanded={expandedTaskId === task.id}
                   onToggle={() => setExpandedTaskId(expandedTaskId === task.id ? null : task.id)}
-                  onStatusChange={handleStatusChange}
                   onDelete={handleDeleteTask}
                   onEdit={() => setSelectedTask(task)}
                   onCommentAdded={refetchTasks}

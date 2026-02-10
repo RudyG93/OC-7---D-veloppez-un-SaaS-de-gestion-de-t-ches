@@ -33,6 +33,22 @@ export const getInitials = (name: string, email?: string): string => {
     return '';
 };
 
+/**
+ * Retourne le nom d'affichage d'un utilisateur (nom ou début de l'email)
+ *
+ * @param name - Nom complet (peut être null/undefined)
+ * @param email - Email de l'utilisateur (fallback)
+ * @returns Le nom ou la partie locale de l'email
+ *
+ * @example
+ * getDisplayName('John Doe', 'john@mail.com') // → 'John Doe'
+ * getDisplayName(null, 'john@mail.com') // → 'john'
+ * getDisplayName('', 'john@mail.com') // → 'john'
+ */
+export const getDisplayName = (name: string | null | undefined, email: string): string => {
+    return name || email.split('@')[0];
+};
+
 // ============================================================================
 // Fonctions de formatage de dates
 // ============================================================================
@@ -51,6 +67,28 @@ export const formatDate = (dateString: string): string => {
         day: 'numeric',
         month: 'long',
     });
+};
+
+/**
+ * Formate une date avec jour, mois et heure (ex: "9 janvier, 11:42")
+ *
+ * @param dateString - Date ISO string
+ * @returns Date formatée avec heure
+ *
+ * @example
+ * formatDateTime('2025-01-09T11:42:00Z') // → '9 janvier, 11:42'
+ */
+export const formatDateTime = (dateString: string): string => {
+    const date = new Date(dateString);
+    const dayMonth = date.toLocaleDateString('fr-FR', {
+        day: 'numeric',
+        month: 'long',
+    });
+    const time = date.toLocaleTimeString('fr-FR', {
+        hour: '2-digit',
+        minute: '2-digit',
+    });
+    return `${dayMonth}, ${time}`;
 };
 
 /**

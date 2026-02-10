@@ -10,7 +10,7 @@ type AvatarSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
 /**
  * Variantes de couleur pour l'avatar
  */
-type AvatarVariant = 'gray' | 'orange' | 'light';
+type AvatarVariant = 'grey' | 'orange' | 'light';
 
 /**
  * Props du composant Avatar
@@ -32,8 +32,8 @@ interface AvatarProps {
  * Classes de taille pour l'avatar
  */
 const sizeClasses: Record<AvatarSize, { container: string; text: string }> = {
-    xs: { container: 'w-5 h-5', text: 'text-[10px]' },
-    sm: { container: 'w-6 h-6', text: 'text-[10px]' },
+    xs: { container: 'w-5 h-5', text: 'text-[9px]' },
+    sm: { container: 'w-6 h-6', text: 'text-[9px]' },
     md: { container: 'w-8 h-8', text: 'text-xs' },
     lg: { container: 'w-10 h-10', text: 'text-sm' },
     xl: { container: 'w-12 h-12', text: 'text-xs' },
@@ -43,7 +43,7 @@ const sizeClasses: Record<AvatarSize, { container: string; text: string }> = {
  * Classes de couleur pour l'avatar
  */
 const variantClasses: Record<AvatarVariant, string> = {
-    gray: 'bg-primary-grey',
+    grey: 'bg-primary-grey text-foreground',
     orange: 'bg-primary text-white',
     light: 'bg-primary-light text-avatar',
 };
@@ -70,7 +70,7 @@ export default function Avatar({
     name,
     email,
     size = 'md',
-    variant = 'gray',
+    variant = 'grey',
     className = '',
 }: AvatarProps) {
     const sizeStyle = sizeClasses[size];

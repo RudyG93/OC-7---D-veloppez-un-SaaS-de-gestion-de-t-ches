@@ -110,7 +110,7 @@ label[for],
  * Usage: className="form-input-search"
  */
 .form-input-search {
-  @apply px-3 py-2 border border-gray-200 rounded-lg text-sm;
+  @apply px-4 py-2 border border-primary-grey rounded-lg text-sm font-body text-heading;
   @apply focus:outline-none focus:ring-2 focus:ring-accent;
 }
 

@@ -4,9 +4,9 @@ import { useState } from 'react';
 import Avatar from '@/components/ui/Avatar';
 import Button from '@/components/ui/Button';
 import Spinner from '@/components/ui/Spinner';
-import { formatRelativeDate } from '@/lib/utils';
+import { formatDateTime, getDisplayName } from '@/lib/utils';
 import { useComments, useCreateComment } from '@/hooks/useComments';
-import type { Comment } from '@/types';
+import { useProfile } from '@/hooks/useAuth';
 
 // ============================================================================
 // Types
@@ -24,48 +24,6 @@ interface CommentSectionProps {
 }
 
 // ============================================================================
-// Composant interne : Liste des commentaires
-// ============================================================================
-
-function CommentList({ comments }: { comments: Comment[] }) {
-    if (comments.length === 0) {
-        return (
-            <p className="text-sm text-gray-400 italic py-2">
-                Aucun commentaire pour le moment
-            </p>
-        );
-    }
-
-    return (
-        <div className="space-y-3 mb-4">
-            {comments.map((comment) => (
-                <div key={comment.id} className="flex gap-3">
-                    <Avatar
-                        name={comment.author.name}
-                        email={comment.author.email}
-                        size="md"
-                        className="shrink-0"
-                    />
-                    <div className="flex-1">
-                        <div className="flex items-center gap-2">
-                            <span className="text-sm font-medium text-gray-900">
-                                {comment.author.name || comment.author.email.split('@')[0]}
-                            </span>
-                            <span className="text-xs text-gray-400">
-                                {formatRelativeDate(comment.createdAt)}
-                            </span>
-                        </div>
-                        <p className="text-sm text-gray-600 mt-0.5">
-                            {comment.content}
-                        </p>
-                    </div>
-                </div>
-            ))}
-        </div>
-    );
-}
-
-// ============================================================================
 // Composant principal
 // ============================================================================
 
@@ -76,8 +34,8 @@ function CommentList({ comments }: { comments: Comment[] }) {
 export function CommentSection({ projectId, taskId, isVisible, onCommentAdded }: CommentSectionProps) {
     const [newComment, setNewComment] = useState('');
     const [error, setError] = useState<string | null>(null);
+    const { user } = useProfile();
 
-    // Charger les commentaires seulement quand la section est visible
     const { comments, isLoading, refetch } = useComments(
         isVisible ? projectId : '',
         isVisible ? taskId : ''
@@ -93,46 +51,87 @@ export function CommentSection({ projectId, taskId, isVisible, onCommentAdded }:
             await createComment(projectId, taskId, { content: newComment.trim() });
             setNewComment('');
             refetch();
-            onCommentAdded?.(); // Notifier le parent pour mettre à jour le compteur
+            onCommentAdded?.();
         } catch (err) {
             setError(err instanceof Error ? err.message : "Erreur lors de l'envoi");
         }
     };
 
     return (
-        <div className="mt-4 border-t border-gray-100 pt-4">
+        <div className="mt-4 space-y-4">
             {/* Liste des commentaires */}
             {isLoading ? (
                 <div className="flex items-center justify-center py-4">
                     <Spinner size="sm" label="Chargement des commentaires" />
                 </div>
+            ) : comments.length === 0 ? (
+                <p className="text-sm font-body text-sub italic py-2">
+                    Aucun commentaire pour le moment
+                </p>
             ) : (
-                <CommentList comments={comments} />
+                <div className="space-y-4">
+                    {comments.map((comment) => (
+                        <div key={comment.id} className="flex gap-3 items-start">
+                            <Avatar
+                                name={comment.author.name}
+                                email={comment.author.email}
+                                size="sm"
+                                className="shrink-0 mt-1"
+                            />
+                            <div className="flex-1 bg-background rounded-xl px-5 py-4">
+                                <div className="flex items-center justify-between mb-3">
+                                    <span className="text-sm font-heading font-semibold text-heading mb-2">
+                                        {getDisplayName(comment.author.name, comment.author.email)}
+                                    </span>
+                                    <span className="text-xs font-body text-sub">
+                                        {formatDateTime(comment.createdAt)}
+                                    </span>
+                                </div>
+                                <p className="text-sm font-body text-sub">
+                                    {comment.content}
+                                </p>
+                            </div>
+                        </div>
+                    ))}
+                </div>
             )}
 
             {/* Formulaire de nouveau commentaire */}
-            <form onSubmit={handleSubmit} className="flex gap-2">
-                <label htmlFor="new-comment" className="sr-only">Nouveau commentaire</label>
-                <input
-                    id="new-comment"
-                    type="text"
-                    value={newComment}
-                    onChange={(e) => setNewComment(e.target.value)}
-                    placeholder="Ajouter un commentaire..."
-                    className="flex-1 px-3 py-2 border border-gray-200 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
-                />
-                <Button
-                    type="submit"
-                    disabled={isCreating || !newComment.trim()}
-                    variant="orange"
-                    size="md"
-                >
-                    {isCreating ? 'Envoi...' : 'Envoyer'}
-                </Button>
+            <form onSubmit={handleSubmit}>
+                <div className="flex gap-3 items-start">
+                    <Avatar
+                        name={user?.name}
+                        email={user?.email}
+                        size="sm"
+                        variant="light"
+                        className="shrink-0 mt-1"
+                    />
+                    <div className="flex-1">
+                        <label htmlFor={`comment-${taskId}`} className="sr-only">Nouveau commentaire</label>
+                        <textarea
+                            id={`comment-${taskId}`}
+                            value={newComment}
+                            onChange={(e) => setNewComment(e.target.value)}
+                            placeholder="Ajouter un commentaire..."
+                            rows={3}
+                            className="w-full bg-background rounded-xl px-5 py-4 text-sm font-body text-heading placeholder:text-sub resize-none focus:outline-none focus:ring-2 focus:ring-accent"
+                        />
+                    </div>
+                </div>
+                <div className="flex justify-end mt-3">
+                    <Button
+                        type="submit"
+                        disabled={isCreating || !newComment.trim()}
+                        variant="secondary"
+                        size="proj"
+                    >
+                        {isCreating ? 'Envoi...' : 'Envoyer'}
+                    </Button>
+                </div>
             </form>
 
             {error && (
-                <p className="text-sm text-red-500 mt-2">{error}</p>
+                <p className="text-sm text-red-500 font-body">{error}</p>
             )}
         </div>
     );
