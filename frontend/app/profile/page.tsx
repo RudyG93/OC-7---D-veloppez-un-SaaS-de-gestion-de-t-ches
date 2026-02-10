@@ -14,6 +14,7 @@ import Button from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
 import Spinner from '@/components/ui/Spinner';
 import { useProfile, useUpdateProfile } from '@/hooks/useAuth';
+import { getDisplayName } from '@/lib/utils';
 
 /** Structure des données du formulaire */
 interface FormData {
@@ -145,12 +146,12 @@ export default function ProfilePage() {
         <div className="min-h-screen flex flex-col bg-background">
             <Header />
 
-            <main id="main-content" className="flex-1 max-w-2xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8">
-                <div className="bg-white border border-gray-200 rounded-xl p-8">
+            <main id="main-content" className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-12">
+                <div className="bg-white border border-primary-grey rounded-xl p-12">
                     {/* En-tête */}
-                    <div className="mb-8">
-                        <h1 className="text-xl font-bold text-gray-900">Mon compte</h1>
-                        <p className="text-gray-500">{user.name || user.email}</p>
+                    <div className="mb-12">
+                        <h1 className="text-2xl font-heading font-semibold text-heading">Mon compte</h1>
+                        <p className="mt-1 font-body text-sub">{getDisplayName(user.name, user.email)}</p>
                     </div>
 
                     {/* Messages de feedback */}
@@ -168,7 +169,7 @@ export default function ProfilePage() {
                     )}
 
                     {/* Formulaire de modification */}
-                    <form onSubmit={handleSubmit} className="space-y-6">
+                    <form onSubmit={handleSubmit} className="space-y-10">
                         <Input
                             label="Nom"
                             type="text"
@@ -206,7 +207,7 @@ export default function ProfilePage() {
                             name="password"
                             value={formData.password}
                             onChange={handleInputChange}
-                            placeholder="Nouveau mot de passe (laisser vide pour ne pas modifier)"
+                            placeholder="*************"
                             inputSize="lg"
                         />
 
@@ -214,6 +215,7 @@ export default function ProfilePage() {
                             <Button
                                 type="submit"
                                 variant="primary"
+                                size="proj"
                                 disabled={isUpdating}
                             >
                                 {isUpdating ? 'Mise à jour...' : 'Modifier les informations'}

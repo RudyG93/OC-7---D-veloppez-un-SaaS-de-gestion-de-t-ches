@@ -69,9 +69,9 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
         const errorId = `${inputId}-error`;
         const helperId = `${inputId}-helper`;
 
-        const baseStyles = 'w-full border rounded-lg bg-white transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent';
+        const baseStyles = 'w-full border rounded-lg bg-white font-body text-heading placeholder:text-sub transition-colors focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent';
         
-        const borderStyle = error ? 'border-red-500' : 'border-gray-300';
+        const borderStyle = error ? 'border-red-500' : 'border-primary-grey';
 
         const inputClasses = `${baseStyles} ${sizeStyles[inputSize]} ${borderStyle} ${className}`.trim();
 
@@ -80,7 +80,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
                 {label && (
                     <label
                         htmlFor={inputId}
-                        className="block text-sm font-medium text-gray-700 mb-1"
+                        className="block text-sm font-heading font-medium text-heading mb-1"
                     >
                         {label}
                         {isRequired && (
@@ -107,7 +107,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
                 />
 
                 {helperText && !error && (
-                    <p id={helperId} className="mt-1 text-xs text-gray-500">
+                    <p id={helperId} className="mt-1 text-xs font-body text-sub">
                         {helperText}
                     </p>
                 )}
