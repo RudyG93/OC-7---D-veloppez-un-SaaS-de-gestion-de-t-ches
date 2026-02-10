@@ -13,6 +13,7 @@ import dashboardRoutes from "./routes/dashboardRoutes";
 import { searchUsers } from "./controllers/projectController";
 import taskRoutes from "./routes/taskRoutes";
 import commentRoutes from "./routes/commentRoutes";
+import aiRoutes from "./routes/aiRoutes";
 
 // Middleware
 import { authenticateToken } from "./middleware/auth";
@@ -66,6 +67,7 @@ app.use(
 app.use("/auth", authRoutes);
 app.use("/projects", projectRoutes);
 app.use("/dashboard", dashboardRoutes);
+app.use("/ai", aiRoutes);
 
 // Route pour la recherche d'utilisateurs
 app.get("/users/search", authenticateToken, searchUsers);

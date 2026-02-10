@@ -5,13 +5,14 @@
  * 1. Prompt initial — l'utilisateur décrit les tâches souhaitées (avec échéance obligatoire)
  * 2. Liste des tâches générées — modifier, supprimer, puis ajouter au projet
  *
- * Utilise Groq (Llama 3) via la route /api/ai/generate-tasks.
+ * Utilise le backend Express via le wrapper src/api/ai.ts.
  */
 'use client';
 
 import { useState, useRef, useEffect, useCallback } from 'react';
 import Image from 'next/image';
 import { useCreateTask } from '@/hooks/useTasks';
+import { generateTasksAI } from '@/api/ai';
 
 // ============================================================================
 // Types
@@ -92,32 +93,19 @@ export default function CreateTaskIA({ projectId, onClose, onSuccess }: CreateTa
         setError(null);
 
         try {
-            const response = await fetch('/api/ai/generate-tasks', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ prompt: prompt.trim() }),
-            });
+            const aiTasks = await generateTasksAI(prompt.trim());
 
-            const data = await response.json();
-
-            if (!response.ok) {
-                setError(data.error || 'Erreur lors de la génération');
-                setIsGenerating(false);
-                return;
-            }
-
-            const generatedTasks: AIGeneratedTask[] = data.tasks.map(
-                (t: { title: string; description: string; dueDate: string }) => ({
-                    id: crypto.randomUUID(),
-                    title: t.title,
-                    description: t.description,
-                    dueDate: t.dueDate || '',
-                })
-            );
+            const generatedTasks: AIGeneratedTask[] = aiTasks.map(t => ({
+                id: crypto.randomUUID(),
+                title: t.title,
+                description: t.description,
+                dueDate: t.dueDate || '',
+            }));
 
             setTasks(generatedTasks);
             setPrompt('');
-        } catch {
+        } catch (err) {
+            setError(err instanceof Error ? err.message : 'Impossible de contacter le serveur. Réessayez.');
             setError('Impossible de contacter le serveur. Réessayez.');
         } finally {
             setIsGenerating(false);
