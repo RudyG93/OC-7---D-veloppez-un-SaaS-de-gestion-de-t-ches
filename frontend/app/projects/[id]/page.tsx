@@ -22,6 +22,7 @@ import { useProfile } from "@/hooks/useAuth";
 import TaskProject from "@/components/tasks/TaskProject";
 import type { Task, TaskStatus } from "@/types";
 import CreateTaskModal from "@/components/modals/CreateTask";
+import CreateTaskIAModal from "@/components/modals/CreateTaskIA";
 import EditTaskModal from "@/components/modals/EditTask";
 import EditProjectModal from "@/components/modals/EditProject";
 import { getProjectPermissions } from "@/lib/permissions";
@@ -37,6 +38,7 @@ export default function ProjectDetailPage() {
   const [statusFilter, setStatusFilter] = useState<TaskStatus | "ALL">("ALL");
   const [searchQuery, setSearchQuery] = useState("");
   const [showTaskModal, setShowTaskModal] = useState(false);
+  const [showTaskIAModal, setShowTaskIAModal] = useState(false);
   const [showEditProjectModal, setShowEditProjectModal] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
@@ -178,11 +180,17 @@ export default function ProjectDetailPage() {
             )}
           </div>
 
-          {/* Bouton création tâche */}
+          {/* Boutons création tâche */}
           {permissions.canCreateTask && (
-            <Button onClick={() => setShowTaskModal(true)} variant="primary" size="proj" className="shrink-0">
-              Créer une tâche
-            </Button>
+            <div className="flex items-center gap-2 shrink-0">
+              <Button onClick={() => setShowTaskModal(true)} variant="primary" size="proj">
+                Créer une tâche
+              </Button>
+              <Button onClick={() => setShowTaskIAModal(true)} variant="orange" size="proj">
+                <Image src="/ico-star-ia.png" alt="" width={16} height={16} />
+                IA
+              </Button>
+            </div>
           )}
         </div>
 
@@ -272,6 +280,9 @@ export default function ProjectDetailPage() {
       {/* Modales */}
       {showTaskModal && (
         <CreateTaskModal projectId={projectId} onClose={() => setShowTaskModal(false)} onSuccess={refetchTasks} />
+      )}
+      {showTaskIAModal && (
+        <CreateTaskIAModal projectId={projectId} onClose={() => setShowTaskIAModal(false)} onSuccess={refetchTasks} />
       )}
       {selectedTask && (
         <EditTaskModal task={selectedTask} projectId={projectId} onClose={() => setSelectedTask(null)} onSuccess={refetchTasks} />
