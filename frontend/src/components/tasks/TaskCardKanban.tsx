@@ -41,7 +41,7 @@ export default function TaskCardKanban({ task, onClick }: TaskCardKanbanProps) {
             role="listitem"
             tabIndex={0}
             aria-label={`Tâche: ${task.title}`}
-            className="card-interactive p-7"
+            className="card-interactive p-4 sm:p-7"
             onClick={() => onClick?.()}
             onKeyDown={(e) => {
                 if (e.key === 'Enter' || e.key === ' ') {
@@ -52,7 +52,7 @@ export default function TaskCardKanban({ task, onClick }: TaskCardKanbanProps) {
         >
             {/* Titre et statut */}
             <div className="flex items-start justify-between gap-2 mb-2">
-                <h4 className="font-heading font-bold text-heading line-clamp-2 truncate max-w-50">
+                <h4 className="font-heading font-bold text-heading line-clamp-2 wrap-break-word min-w-0">
                     {task.title}
                 </h4>
                 <StatusTag status={task.status} />
@@ -65,15 +65,15 @@ export default function TaskCardKanban({ task, onClick }: TaskCardKanbanProps) {
             )}
 
             {/* Métadonnées */}
-            <div className="flex items-center gap-3 text-sm font-body text-sub mb-6">
+            <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-sm font-body text-sub mb-6">
                 {task.project && (
                     <span className="flex items-center gap-1.5">
                         <Image src="/ico-project.png" alt="" width={16} height={16} aria-hidden="true" />
                         <span className="sr-only">Projet:</span>
-                        <span className="truncate max-w-25">{task.project.name}</span> 
+                        <span className="truncate max-w-40">{task.project.name}</span> 
                     </span>
                 )}
-                |
+                {task.project && <span aria-hidden="true">|</span>}
                 {task.dueDate && (
                     <span className="flex items-center gap-1.5">
                         <Image src="/ico-date.png" alt="" width={16} height={16} aria-hidden="true" />
@@ -81,7 +81,7 @@ export default function TaskCardKanban({ task, onClick }: TaskCardKanbanProps) {
                         {formatDate(task.dueDate)} 
                     </span>
                 )}
-                |
+                {task.dueDate && <span aria-hidden="true">|</span>}
                 <span className="flex items-center gap-1.5">
                     <Image src="/ico-comms.png" alt="" width={16} height={16} aria-hidden="true" />
                     <span className="sr-only">Commentaires:</span>

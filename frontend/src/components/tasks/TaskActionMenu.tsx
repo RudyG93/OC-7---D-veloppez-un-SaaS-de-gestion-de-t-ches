@@ -1,7 +1,8 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef, useCallback } from 'react';
 import Image from 'next/image';
+import { useClickOutside } from '@/hooks/useClickOutside';
 
 // ============================================================================
 // Types
@@ -32,6 +33,10 @@ export function TaskActionMenu({
     onDelete,
 }: TaskActionMenuProps) {
     const [showMenu, setShowMenu] = useState(false);
+    const menuRef = useRef<HTMLDivElement>(null);
+
+    const closeMenu = useCallback(() => setShowMenu(false), []);
+    useClickOutside(menuRef, closeMenu);
 
     const handleEdit = () => {
         onEdit();
@@ -44,7 +49,7 @@ export function TaskActionMenu({
     };
 
     return (
-        <div className="relative">
+        <div className="relative" ref={menuRef}>
             <button
                 onClick={() => setShowMenu(!showMenu)}
                 className="flex items-center justify-center w-10 h-10 shrink-0 rounded-lg border border-primary-grey hover:bg-background focus:outline-none focus:ring-2 focus:ring-primary transition-colors"

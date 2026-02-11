@@ -75,10 +75,10 @@ export default function DashboardPage() {
 
             <main id="main-content" className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8">
                 {/* En-tête du dashboard */}
-                <div className="flex items-start justify-between mb-8">
+                <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-8">
                     <div>
-                        <h1 className="text-2xl font-heading font-semibold">Tableau de bord</h1>
-                        <p className="font-body mt-3 mb-6">
+                        <h1 className="text-xl sm:text-2xl font-heading font-semibold">Tableau de bord</h1>
+                        <p className="font-body mt-3 mb-2 sm:mb-6">
                             Bonjour {user?.name || 'Utilisateur'}, voici un aperçu de vos
                             projets et tâches
                         </p>
@@ -88,6 +88,7 @@ export default function DashboardPage() {
                         onClick={() => setShowCreateModal(true)}
                         variant="primary"
                         size="proj"
+                        className="w-full sm:w-auto shrink-0"
                     >
                         + Créer un projet
                     </Button>
@@ -103,7 +104,7 @@ export default function DashboardPage() {
                 )}
 
                 {/* Tabs de vue */}
-                <div className="flex items-center gap-2 mx-6">
+                <div className="flex items-center gap-2 mx-0 sm:mx-6">
                     <button
                         onClick={() => setView('list')}
                         aria-pressed={view === 'list'}
@@ -153,7 +154,7 @@ export default function DashboardPage() {
 
                         {view === 'kanban' && (
                             <div className='mt-10'>
-                                <KanbanBoard tasks={sortedTasks} onTaskClick={handleTaskClick} />
+                                <KanbanBoard tasks={filteredTasks} onTaskClick={handleTaskClick} />
                             </div>
                         )}
                     </>

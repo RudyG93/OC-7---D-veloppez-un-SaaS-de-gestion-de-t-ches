@@ -87,6 +87,7 @@ export default function Alert({
     return (
         <div
             role="alert"
+            aria-live="polite"
             className={`flex items-center gap-3 p-4 border rounded-lg text-sm ${styleClasses} ${className}`}
         >
             {icons[type]}

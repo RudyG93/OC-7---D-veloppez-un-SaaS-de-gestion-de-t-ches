@@ -33,12 +33,12 @@ export default function ProjectsPage() {
         className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8"
       >
         {/* En-tête */}
-        <div className="flex items-start justify-between mb-10">
+        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-8 sm:mb-10">
           <div>
-            <h1 className="text-2xl font-heading font-semibold text-heading">
+            <h1 className="text-xl sm:text-2xl font-heading font-semibold text-heading">
               Mes projets
             </h1>
-            <p className="font-body mt-3 mb-6">
+            <p className="font-body mt-3 mb-2 sm:mb-6">
               Gérez vos projets
             </p>
           </div>
@@ -47,6 +47,7 @@ export default function ProjectsPage() {
             onClick={() => setShowCreateModal(true)}
             variant="primary"
             size="proj"
+            className="w-full sm:w-auto shrink-0"
           >
             + Créer un projet
           </Button>
@@ -71,8 +72,8 @@ export default function ProjectsPage() {
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {(projects ?? []).map((project) => (
-              <ProjectCard key={project.id} project={project} user={user!} />
+            {user && (projects ?? []).map((project) => (
+              <ProjectCard key={project.id} project={project} user={user} />
             ))}
           </div>
         )}

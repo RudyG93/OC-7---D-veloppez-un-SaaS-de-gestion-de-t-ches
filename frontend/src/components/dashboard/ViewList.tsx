@@ -26,9 +26,9 @@ export default function TaskList({
     onSearchChange,
 }: TaskListProps) {
     return (
-        <div className="bg-white rounded-xl p-10 shadow-sm border border-primary-grey mt-10">
+        <div className="bg-white rounded-xl p-4 sm:p-6 lg:p-10 shadow-sm border border-primary-grey mt-6 sm:mt-10">
             {/* En-tête */}
-            <div className="flex items-start justify-between mb-10">
+            <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-6 sm:mb-10">
                 <div>
                     {title && (
                         <h2 className="text-lg font-heading font-semibold text-heading">{title}</h2>
@@ -46,7 +46,7 @@ export default function TaskList({
                         placeholder="Rechercher une tâche"
                         value={searchValue}
                         onChange={(e) => onSearchChange?.(e.target.value)}
-                        className="w-80 h-14 px-4"
+                        className="w-full sm:w-80 h-12 sm:h-14 px-4"
                     />
                 )}
             </div>

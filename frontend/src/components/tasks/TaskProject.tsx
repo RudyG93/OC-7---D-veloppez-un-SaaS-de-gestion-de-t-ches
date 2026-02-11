@@ -44,12 +44,12 @@ export default function TaskProject({
     const canDelete = canDeleteTask(userRole, userId, task.creatorId);
 
     return (
-        <div className="rounded-xl border border-primary-grey bg-white p-5 mx-20 mt-8">
+        <div className="rounded-xl border border-primary-grey bg-white p-4 sm:p-5 mx-2 sm:mx-6 lg:mx-20 mt-4 sm:mt-8">
             {/* En-tête : contenu + menu actions */}
-            <div className="flex items-start gap-4">
+            <div className="flex items-start gap-3 sm:gap-4">
                 <div className="flex-1 min-w-0">
                     {/* Titre + Status */}
-                    <div className="flex items-center gap-3 mb-1">
+                    <div className="flex flex-wrap items-center gap-2 sm:gap-3 mb-1">
                         <h3 className="font-heading font-semibold text-heading">{task.title}</h3>
                         <StatusTag status={task.status} />
                     </div>
@@ -70,9 +70,9 @@ export default function TaskProject({
 
                     {/* Assignés */}
                     {task.assignees && task.assignees.length > 0 && (
-                        <div className="flex items-center gap-2 text-sm font-body text-sub">
+                        <div className="flex flex-wrap items-center gap-2 text-sm font-body text-sub">
                             <span>Assigné à :</span>
-                            <div className="flex items-center gap-1">
+                            <div className="flex items-center gap-1 flex-wrap">
                                 {task.assignees.map((assignee) => (
                                     <div
                                         key={assignee.id}
@@ -107,6 +107,7 @@ export default function TaskProject({
             <hr className="border-primary-grey mt-6 -mx-1" aria-hidden="true" />
             <button
                 onClick={onToggle}
+                aria-expanded={isExpanded}
                 className="w-full flex items-center justify-between gap-2 mt-3 text-sm font-heading font-medium text-heading hover:text-accent transition-colors"
             >
                 <span>Commentaires ({task._count?.comments ?? 0})</span>

@@ -39,6 +39,29 @@ export const STATUS_CONFIG = {
 export type DisplayableStatus = keyof typeof STATUS_CONFIG;
 
 /**
+ * Configuration des styles de tags de statut
+ * Utilisé dans StatusTag et les cartes de tâches
+ */
+export const STATUS_TAG_CONFIG: Record<TaskStatus, { label: string; className: string }> = {
+    TODO: {
+        label: 'À faire',
+        className: 'bg-[#FFE0E0] text-[#EF4444] border-[#FFE0E0]',
+    },
+    IN_PROGRESS: {
+        label: 'En cours',
+        className: 'bg-[#FFF0D7] text-[#E08D00] border-[#FFF0D7]',
+    },
+    DONE: {
+        label: 'Terminée',
+        className: 'bg-[#F1FFF7] text-[#27AE60] border-[#F1FFF7]',
+    },
+    CANCELLED: {
+        label: 'Annulée',
+        className: 'bg-gray-100 text-gray-600 border-gray-200',
+    },
+};
+
+/**
  * Configuration des colonnes Kanban
  */
 export const KANBAN_COLUMNS: { status: TaskStatus; title: string }[] = [

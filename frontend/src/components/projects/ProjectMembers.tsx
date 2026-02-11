@@ -12,8 +12,8 @@ export function ProjectMembers({ project, user }: ProjectMembersProps) {
   const memberCount = (project.members?.length ?? 0) + 1;
 
   return (
-    <div className="bg-[#F3F4F6] rounded-xl p-6 mb-8">
-      <div className="flex items-center justify-between">
+    <div className="bg-gray-100 rounded-xl p-4 sm:p-6 mb-6 sm:mb-8">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
         {/* Titre + compteur */}
         <div className="flex items-baseline gap-2">
           <h2 className="font-heading font-semibold text-heading">Contributeurs</h2>

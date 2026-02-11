@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import Link from 'next/link';
 import { useLogin } from '@/hooks/useAuth';
 import { validateLoginForm, ValidationError } from '@/lib/validation';
 import Alert from '@/components/ui/Alert';
@@ -85,16 +84,6 @@ export default function LoginForm() {
                     >
                         {isLoading ? 'Connexion...' : 'Se connecter'}
                     </Button>
-                </div>
-
-                {/* Mot de passe oublié */}
-                <div className="text-center">
-                    <Link
-                        href="#"
-                        className="text-accent underline text-sm"
-                    >
-                        Mot de passe oublié?
-                    </Link>
                 </div>
             </form>
         </div>

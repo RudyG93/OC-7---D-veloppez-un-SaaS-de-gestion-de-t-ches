@@ -6,7 +6,7 @@
  */
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState } from 'react';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import Alert from '@/components/ui/Alert';
@@ -37,24 +37,18 @@ export default function ProfilePage() {
     const { user, isLoading, error, refetch: refetchProfile } = useProfile();
     const { updateProfile, isLoading: isUpdating, error: updateError } = useUpdateProfile();
 
-    // Calculer les valeurs initiales à partir de user (mémorisé pour éviter les re-renders)
-    const initialFormData = useMemo<FormData>(() => {
-        const { firstName, lastName } = parseUserName(user?.name);
-        return {
-            firstName,
-            lastName,
-            email: user?.email || '',
-            password: '',
-        };
-    }, [user?.name, user?.email]);
-
-    const [formData, setFormData] = useState<FormData>(initialFormData);
+    const [formData, setFormData] = useState<FormData>({
+        firstName: '',
+        lastName: '',
+        email: '',
+        password: '',
+    });
     const [successMessage, setSuccessMessage] = useState('');
 
-    // Synchroniser avec les données utilisateur quand elles changent
-    const [lastUserId, setLastUserId] = useState(user?.id);
-    if (user?.id && user.id !== lastUserId) {
-        setLastUserId(user.id);
+    // Synchroniser le formulaire quand les données utilisateur changent
+    const [prevUserId, setPrevUserId] = useState(user?.id);
+    if (user?.id && user.id !== prevUserId) {
+        setPrevUserId(user.id);
         const { firstName, lastName } = parseUserName(user.name);
         setFormData({
             firstName,
@@ -146,11 +140,11 @@ export default function ProfilePage() {
         <div className="min-h-screen flex flex-col bg-background">
             <Header />
 
-            <main id="main-content" className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-12">
-                <div className="bg-white border border-primary-grey rounded-xl p-12">
+            <main id="main-content" className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-6 sm:py-12">
+                <div className="bg-white border border-primary-grey rounded-xl p-6 sm:p-8 lg:p-12">
                     {/* En-tête */}
-                    <div className="mb-12">
-                        <h1 className="text-2xl font-heading font-semibold text-heading">Mon compte</h1>
+                    <div className="mb-8 sm:mb-12">
+                        <h1 className="text-xl sm:text-2xl font-heading font-semibold text-heading">Mon compte</h1>
                         <p className="mt-1 font-body text-sub">{getDisplayName(user.name, user.email)}</p>
                     </div>
 
@@ -169,7 +163,7 @@ export default function ProfilePage() {
                     )}
 
                     {/* Formulaire de modification */}
-                    <form onSubmit={handleSubmit} className="space-y-10">
+                    <form onSubmit={handleSubmit} className="space-y-6 sm:space-y-10">
                         <Input
                             label="Nom"
                             type="text"

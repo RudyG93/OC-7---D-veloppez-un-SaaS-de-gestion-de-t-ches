@@ -1,8 +1,9 @@
 'use client';
 
-import { useState, useEffect, useCallback, useId } from 'react';
+import { useState, useEffect, useId } from 'react';
 import Image from 'next/image';
-import { searchUsersApi } from '@/api/users';
+import { useSearchUsers } from '@/hooks/useUsers';
+import { useDebounce } from '@/hooks/useDebounce';
 import { User } from '@/types';
 
 // ============================================================================
@@ -37,46 +38,22 @@ export function AssigneeDropdown({
     // État du dropdown
     const [showDropdown, setShowDropdown] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
-    const [searchResults, setSearchResults] = useState<User[]>([]);
-    const [isSearching, setIsSearching] = useState(false);
 
-    // ========================================================================
-    // Recherche d'utilisateurs
-    // ========================================================================
+    // Hook de recherche + debounce
+    const { searchUsers, users: rawResults, isLoading: isSearching } = useSearchUsers();
+    const debouncedSearch = useDebounce(searchQuery, 300);
 
-    /** Recherche des utilisateurs via l'API */
-    const searchUsers = useCallback(async (query: string) => {
-        if (query.length < 2) {
-            setSearchResults([]);
-            return;
-        }
+    // Filtrer les utilisateurs déjà sélectionnés
+    const searchResults = rawResults.filter(
+        (user) => !selectedAssignees.some((a) => a.id === user.id)
+    );
 
-        setIsSearching(true);
-        try {
-            const response = await searchUsersApi(query);
-            const filteredUsers = (response.data?.users || []).filter(
-                (user) => !selectedAssignees.some((a) => a.id === user.id)
-            );
-            setSearchResults(filteredUsers);
-        } catch (err) {
-            console.error('Erreur de recherche:', err);
-            setSearchResults([]);
-        } finally {
-            setIsSearching(false);
-        }
-    }, [selectedAssignees]);
-
-    // Debounce de la recherche (300ms)
+    // Lancer la recherche quand la valeur débouncée change
     useEffect(() => {
-        const timer = setTimeout(() => {
-            if (searchQuery) {
-                searchUsers(searchQuery);
-            } else {
-                setSearchResults([]);
-            }
-        }, 300);
-        return () => clearTimeout(timer);
-    }, [searchQuery, searchUsers]);
+        if (debouncedSearch.length >= 2) {
+            searchUsers(debouncedSearch);
+        }
+    }, [debouncedSearch, searchUsers]);
 
     // ========================================================================
     // Handlers
@@ -86,7 +63,6 @@ export function AssigneeDropdown({
     const handleAddAssignee = (user: User) => {
         onAssigneesChange([...selectedAssignees, user]);
         setSearchQuery('');
-        setSearchResults([]);
     };
 
     /** Retire un utilisateur des assignés */

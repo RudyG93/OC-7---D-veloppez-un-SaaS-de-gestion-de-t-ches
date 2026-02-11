@@ -28,6 +28,7 @@ import EditProjectModal from "@/components/modals/EditProject";
 import { getProjectPermissions } from "@/lib/permissions";
 import { ProjectMembers } from "@/components/projects/ProjectMembers";
 import SearchInput from "@/components/ui/SearchInput";
+import { getStatusLabel } from "@/lib/taskConstants";
 
 export default function ProjectDetailPage() {
   const params = useParams();
@@ -151,7 +152,7 @@ export default function ProjectDetailPage() {
         )}
 
         {/* En-tête du projet */}
-        <div className="flex items-start gap-4 mb-8">
+        <div className="flex flex-col sm:flex-row items-start gap-4 mb-8">
           {/* Bouton retour */}
           <Link href="/projects" className="group shrink-0 p-2 hover:bg-background rounded-full transition-colors">
             <Image src="/back.png" alt="Retour à la liste des projets" width={50} height={50} className="group-focus-visible:hidden" />
@@ -160,30 +161,30 @@ export default function ProjectDetailPage() {
 
           {/* Titre, actions et description */}
           <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-3">
-              <h1 className="text-2xl font-heading font-semibold text-heading">{project.name}</h1>
+            <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+              <h1 className="text-xl sm:text-2xl font-heading font-semibold text-heading">{project.name}</h1>
               {permissions.canEditProject && (
-                <Link href="" className="text-sm text-primary underline font-body" onClick={() => setShowEditProjectModal(true)}>
+                <button type="button" className="text-sm text-primary underline font-body cursor-pointer" onClick={() => setShowEditProjectModal(true)}>
                   Modifier
-                </Link>
+                </button>
               )}
               {permissions.canDeleteProject && (
-                <Link href="" className="text-sm text-red-500 font-body" onClick={() => setShowDeleteConfirm(true)}>
+                <button type="button" className="text-sm text-red-500 font-body cursor-pointer" onClick={() => setShowDeleteConfirm(true)}>
                   Supprimer
-                </Link>
+                </button>
               )}
             </div>
 
             {/* Description du projet */}
             {project.description && (
-              <p className="text-base font-body text-sub mt-2">{project.description}</p>
+              <p className="text-sm sm:text-base font-body text-sub mt-2">{project.description}</p>
             )}
           </div>
 
           {/* Boutons création tâche */}
           {permissions.canCreateTask && (
-            <div className="flex items-center gap-2 shrink-0">
-              <Button onClick={() => setShowTaskModal(true)} variant="primary" size="proj">
+            <div className="flex items-center gap-2 shrink-0 w-full sm:w-auto">
+              <Button onClick={() => setShowTaskModal(true)} variant="primary" size="proj" className="flex-1 sm:flex-initial">
                 Créer une tâche
               </Button>
               <Button onClick={() => setShowTaskIAModal(true)} variant="orange" size="proj">
@@ -200,17 +201,19 @@ export default function ProjectDetailPage() {
         {/* Section des tâches */}
         <div className="bg-white border border-primary-grey rounded-xl">
           {/* En-tête avec filtre */}
-          <div className="p-6">
-            <div className="flex items-center justify-between">
+          <div className="p-4 sm:p-6">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
               <div>
                 <h2 className="font-heading font-semibold text-heading">Tâches</h2>
                 <p className="text-sm font-body text-sub">Par date d&apos;échéance</p>
               </div>
 
-              <div className="flex items-center gap-4">
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4">
                 {/* Filtre par statut */}
-                <div className="relative flex items-center justify-center w-36 h-15 form-input-search cursor-pointer">
+                <div className="relative flex items-center justify-center w-full sm:w-36 h-12 sm:h-15 form-input-search cursor-pointer">
+                  <label htmlFor="status-filter" className="sr-only">Filtrer par statut</label>
                   <select
+                    id="status-filter"
                     value={statusFilter}
                     onChange={(e) => setStatusFilter(e.target.value as TaskStatus | "ALL")}
                     className={`absolute inset-0 w-full h-full opacity-0 cursor-pointer`}
@@ -221,7 +224,7 @@ export default function ProjectDetailPage() {
                     <option value="DONE">Terminée</option>
                   </select>
                   <span className={`text-sm font-body pointer-events-none ${statusFilter === "ALL" ? "text-sub" : "text-heading"}`}>
-                    {statusFilter === "ALL" ? "Statut" : statusFilter === "TODO" ? "À faire" : statusFilter === "IN_PROGRESS" ? "En cours" : "Terminée"}
+                    {statusFilter === "ALL" ? "Statut" : getStatusLabel(statusFilter)}
                   </span>
                   <Image
                     src="/dropdown.png"
@@ -240,7 +243,7 @@ export default function ProjectDetailPage() {
                   placeholder="Rechercher une tâche"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-72 h-15"
+                  className="w-full sm:w-72 h-12 sm:h-15"
                 />
               </div>
             </div>
@@ -293,10 +296,21 @@ export default function ProjectDetailPage() {
 
       {/* Modale de confirmation de suppression */}
       {showDeleteConfirm && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-xl p-6 w-full max-w-md mx-4">
-            <h3 className="text-lg font-heading font-bold text-heading mb-2">Supprimer le projet</h3>
-            <p className="font-body text-sub mb-6">
+        <div
+          className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
+          role="presentation"
+          onClick={(e) => { if (e.target === e.currentTarget) setShowDeleteConfirm(false); }}
+          onKeyDown={(e) => { if (e.key === 'Escape') setShowDeleteConfirm(false); }}
+        >
+          <div
+            role="alertdialog"
+            aria-modal="true"
+            aria-labelledby="delete-confirm-title"
+            aria-describedby="delete-confirm-desc"
+            className="bg-white rounded-xl p-6 w-full max-w-md mx-4"
+          >
+            <h3 id="delete-confirm-title" className="text-lg font-heading font-bold text-heading mb-2">Supprimer le projet</h3>
+            <p id="delete-confirm-desc" className="font-body text-sub mb-6">
               Êtes-vous sûr de vouloir supprimer ce projet ? Cette action est irréversible.
             </p>
             <div className="flex gap-3">

@@ -31,7 +31,13 @@ export const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://loca
  * @example
  * fetch(`${API_BASE_URL}/projects`, { headers: authHeaders() })
  */
-export const authHeaders = () => ({
-    'Content-Type': 'application/json',
-    Authorization: `Bearer ${cookieUtils.getToken()}`,
-});
+export const authHeaders = () => {
+    const token = cookieUtils.getToken();
+    const headers: Record<string, string> = {
+        'Content-Type': 'application/json',
+    };
+    if (token) {
+        headers.Authorization = `Bearer ${token}`;
+    }
+    return headers;
+};

@@ -6,8 +6,6 @@
  * @module components/layout/Footer
  */
 
-'use client';
-
 import Image from 'next/image';
 
 // ============================================================================
@@ -20,7 +18,7 @@ export default function Footer() {
     return (
         <footer className="bg-white border-t border-gray-100 py-4">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="flex items-center justify-between">
+                <div className="flex flex-col sm:flex-row items-center justify-between gap-2">
                     {/* Logo */}
                     <Image
                         src="/logo-black.png"

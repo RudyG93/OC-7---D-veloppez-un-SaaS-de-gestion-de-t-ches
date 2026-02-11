@@ -16,6 +16,7 @@ import type { Task } from '@/types';
 import StatusTag from './StatusTag';
 import Button from '@/components/ui/Button';
 import { formatDate } from '@/lib/utils';
+import { getStatusLabel } from '@/lib/taskConstants';
 
 // ============================================================================
 // Types
@@ -39,8 +40,8 @@ export default function TaskCard({ task, onClick }: TaskCardProps) {
         <article
             tabIndex={0}
             role="listitem"
-            aria-label={`Tâche: ${task.title}, statut: ${task.status === 'TODO' ? 'À faire' : task.status === 'IN_PROGRESS' ? 'En cours' : task.status === 'DONE' ? 'Terminée' : task.status}`}
-            className="card-interactive p-6"
+            aria-label={`Tâche: ${task.title}, statut: ${getStatusLabel(task.status)}`}
+            className="card-interactive p-4 sm:p-6"
             onClick={() => onClick?.()}
             onKeyDown={(e) => {
                 if (e.key === 'Enter' || e.key === ' ') {
@@ -49,10 +50,10 @@ export default function TaskCard({ task, onClick }: TaskCardProps) {
                 }
             }}
         >
-            <div className="flex items-start justify-between gap-4">
+            <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
                 {/* Contenu principal */}
                 <div className="flex-1 min-w-0">
-                    <h3 className="font-heading font-bold text-heading text-lg mb-1">{task.title}</h3>
+                    <h3 className="font-heading font-bold text-heading text-base sm:text-lg mb-1">{task.title}</h3>
                     {task.description && (
                         <p className="text-sm font-body text-sub mb-4">
                             {task.description}
@@ -60,7 +61,7 @@ export default function TaskCard({ task, onClick }: TaskCardProps) {
                     )}
 
                     {/* Métadonnées */}
-                    <div className="flex items-center gap-4 text-sm font-body text-sub">
+                    <div className="flex flex-wrap items-center gap-3 sm:gap-4 text-sm font-body text-sub">
                         {/* Projet */}
                         {task.project && (
                             <span className="flex items-center gap-1.5">
@@ -89,7 +90,7 @@ export default function TaskCard({ task, onClick }: TaskCardProps) {
                 </div>
 
                 {/* Statut et bouton */}
-                <div className="flex flex-col items-end gap-4">
+                <div className="flex flex-row sm:flex-col items-center sm:items-end gap-3 sm:gap-4">
                     <StatusTag status={task.status} />
                     <Button
                         onClick={(e) => {
