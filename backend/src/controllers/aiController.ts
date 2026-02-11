@@ -6,11 +6,19 @@ import { sendSuccess, sendError, sendServerError } from "../utils/response";
 /**
  * Client Groq (compatible SDK OpenAI)
  * Utilise Llama 3.3 70B — gratuit et performant
+ * Initialisation paresseuse pour s'assurer que les variables d'env sont chargées
  */
-const groq = new OpenAI({
-  apiKey: process.env.GROQ_API_KEY,
-  baseURL: "https://api.groq.com/openai/v1",
-});
+let groq: OpenAI | null = null;
+
+function getGroqClient(): OpenAI {
+  if (!groq) {
+    groq = new OpenAI({
+      apiKey: process.env.GROQ_API_KEY,
+      baseURL: "https://api.groq.com/openai/v1",
+    });
+  }
+  return groq;
+}
 
 const SYSTEM_PROMPT = `Tu es un assistant de gestion de projet. L'utilisateur décrit des tâches à créer avec des échéances.
 
@@ -53,7 +61,7 @@ export const generateTasks = async (
       return;
     }
 
-    const completion = await groq.chat.completions.create({
+    const completion = await getGroqClient().chat.completions.create({
       model: "llama-3.3-70b-versatile",
       messages: [
         { role: "system", content: SYSTEM_PROMPT },

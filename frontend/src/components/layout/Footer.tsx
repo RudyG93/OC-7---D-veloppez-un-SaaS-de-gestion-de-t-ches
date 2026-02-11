@@ -25,7 +25,7 @@ export default function Footer() {
                         alt="Abricot"
                         width={80}
                         height={24}
-                        className=""
+                        style={{ width: 'auto', height: 'auto' }}
                     />
 
                     {/* Copyright */}

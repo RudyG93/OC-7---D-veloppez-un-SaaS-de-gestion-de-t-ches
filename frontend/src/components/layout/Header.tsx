@@ -76,6 +76,7 @@ export default function Header() {
                             width={120}
                             height={32}
                             priority
+                            style={{ width: 'auto', height: 'auto' }}
                         />
                     </Link>
 
@@ -100,6 +101,7 @@ export default function Header() {
                                         width={item.iconSize}
                                         height={item.iconSize}
                                         aria-hidden="true"
+                                        style={{ width: 'auto', height: 'auto' }}
                                     />
                                     {item.label}
                                 </Link>
@@ -207,6 +209,7 @@ export default function Header() {
                                         width={item.iconSize}
                                         height={item.iconSize}
                                         aria-hidden="true"
+                                        style={{ width: 'auto', height: 'auto' }}
                                     />
                                     {item.label}
                                 </Link>

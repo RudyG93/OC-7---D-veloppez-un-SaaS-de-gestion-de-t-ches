@@ -65,7 +65,7 @@ export default function TaskCard({ task, onClick }: TaskCardProps) {
                         {/* Projet */}
                         {task.project && (
                             <span className="flex items-center gap-1.5">
-                                <Image src="/ico-project.png" alt="" width={16} height={16} aria-hidden="true" />
+                                <Image src="/ico-project.png" alt="" width={16} height={16} aria-hidden="true" style={{ width: 'auto', height: 'auto' }} />
                                 <span className="sr-only">Projet:</span>
                                 {task.project.name}
                             </span>
@@ -74,7 +74,7 @@ export default function TaskCard({ task, onClick }: TaskCardProps) {
                         {/* Date d'échéance */}
                         {task.dueDate && (
                             <span className="flex items-center gap-1.5">
-                                <Image src="/ico-date.png" alt="" width={16} height={16} aria-hidden="true" />
+                                <Image src="/ico-date.png" alt="" width={16} height={16} aria-hidden="true" style={{ width: 'auto', height: 'auto' }} />
                                 <span className="sr-only">Échéance:</span>
                                 {formatDate(task.dueDate)}
                             </span>
@@ -82,7 +82,7 @@ export default function TaskCard({ task, onClick }: TaskCardProps) {
 
                         {/* Nombre de commentaires */}
                         <span className="flex items-center gap-1.5">
-                            <Image src="/ico-comms.png" alt="" width={16} height={16} aria-hidden="true" />
+                            <Image src="/ico-comms.png" alt="" width={16} height={16} aria-hidden="true" style={{ height: 'auto' }} />
                             <span className="sr-only">Commentaires:</span>
                             {commentsCount}
                         </span>

@@ -1,10 +1,12 @@
+import dotenv from "dotenv";
+dotenv.config();
+
 import express from "express";
 import cors from "cors";
 import helmet from "helmet";
 import morgan from "morgan";
 import swaggerUi from "swagger-ui-express";
 import { PrismaClient } from "@prisma/client";
-import dotenv from "dotenv";
 
 // Routes
 import authRoutes from "./routes/authRoutes";
@@ -20,9 +22,6 @@ import { authenticateToken } from "./middleware/auth";
 
 // Swagger
 import { specs } from "./config/swagger";
-
-// Charger les variables d'environnement
-dotenv.config();
 
 // Initialiser Prisma
 const prisma = new PrismaClient();

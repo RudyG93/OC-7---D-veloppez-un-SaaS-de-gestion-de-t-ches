@@ -154,7 +154,7 @@ export const validateRegisterForm = (
     }
 
     // Validation du nom (si fourni)
-    if (name && name.trim().length > 0 && name.trim().length < 2) {
+    if (typeof name === 'string' && name.trim().length > 0 && name.trim().length < 2) {
         errors.push({
             field: 'name',
             message: 'Le nom doit contenir au moins 2 caractères',

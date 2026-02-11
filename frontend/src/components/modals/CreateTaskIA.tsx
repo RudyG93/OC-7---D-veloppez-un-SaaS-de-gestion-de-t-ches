@@ -146,7 +146,7 @@ export default function CreateTaskIA({ projectId, onClose, onSuccess }: CreateTa
         <Modal
             title={
                 <span className="font-heading font-bold text-heading flex items-center gap-2">
-                    <Image src="/ico-star-ia.png" alt="" width={20} height={20} />
+                    <Image src="/ico-star-ia.png" alt="" width={20} height={20} style={{ height: 'auto' }} />
                     {hasTasks ? 'Vos tâches...' : 'Créer une tâche'}
                 </span>
             }

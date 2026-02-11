@@ -25,6 +25,9 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="fr">
+      <head>
+        <link rel="icon" href="/favicon.ico" sizes="any" />
+      </head>
       <body className={`${inter.variable} ${manrope.variable} antialiased`}>
         {/* Lien d'évitement pour l'accessibilité */}
         <a

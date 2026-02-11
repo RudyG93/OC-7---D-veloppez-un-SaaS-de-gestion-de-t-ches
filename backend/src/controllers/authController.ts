@@ -120,12 +120,20 @@ export const register = async (req: Request, res: Response): Promise<void> => {
     const saltRounds = 12;
     const hashedPassword = await bcrypt.hash(password, saltRounds);
 
+    // Générer des initiales temporaires si pas de nom fourni
+    let finalName = name && name.trim().length > 0 ? name.trim() : null;
+    if (!finalName) {
+      // Prendre les deux premières lettres de l'email (avant le @)
+      const emailName = email.split('@')[0];
+      finalName = emailName.slice(0, 2).toUpperCase();
+    }
+
     // Créer le nouvel utilisateur
     const newUser = await prisma.user.create({
       data: {
         email: email.toLowerCase(),
         password: hashedPassword,
-        name: name?.trim() || null,
+        name: finalName,
       },
       select: {
         id: true,

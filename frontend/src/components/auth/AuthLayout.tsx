@@ -40,6 +40,7 @@ export default function AuthLayout({
                         width={200}
                         height={67}
                         priority
+                        style={{ width: 'auto', height: 'auto' }}
                     />
                 </div>
 

@@ -17,7 +17,6 @@ import {
   sendServerError,
 } from "../utils/response";
 import {
-  validateProjectMembers,
   updateTaskAssignments,
   getTaskAssignments,
 } from "../utils/taskAssignments";
@@ -105,16 +104,16 @@ export const createTask = async (
       return;
     }
 
-    // Vérifier que tous les utilisateurs assignés sont membres du projet
+    // Vérifier que tous les utilisateurs assignés existent dans la base
     if (assigneeIds && assigneeIds.length > 0) {
-      const areValidMembers = await validateProjectMembers(
-        projectId,
-        assigneeIds
-      );
-      if (!areValidMembers) {
+      const existingUsers = await prisma.user.findMany({
+        where: { id: { in: assigneeIds } },
+        select: { id: true },
+      });
+      if (existingUsers.length !== assigneeIds.length) {
         sendError(
           res,
-          "Certains utilisateurs assignés ne sont pas membres du projet",
+          "Certains utilisateurs assignés n'existent pas",
           "INVALID_ASSIGNEES",
           400
         );
@@ -452,16 +451,16 @@ export const updateTask = async (
       return;
     }
 
-    // Vérifier que tous les utilisateurs assignés sont membres du projet
+    // Vérifier que tous les utilisateurs assignés existent dans la base
     if (assigneeIds && assigneeIds.length > 0) {
-      const areValidMembers = await validateProjectMembers(
-        projectId,
-        assigneeIds
-      );
-      if (!areValidMembers) {
+      const existingUsers = await prisma.user.findMany({
+        where: { id: { in: assigneeIds } },
+        select: { id: true },
+      });
+      if (existingUsers.length !== assigneeIds.length) {
         sendError(
           res,
-          "Certains utilisateurs assignés ne sont pas membres du projet",
+          "Certains utilisateurs assignés n'existent pas",
           "INVALID_ASSIGNEES",
           400
         );

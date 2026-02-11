@@ -22,15 +22,17 @@
  * getInitials('Alice') // → 'A'
  */
 export const getInitials = (name: string, email?: string): string => {
-    if (name) {
-        const names = name.split(' ');
-        const initials = names.map((n) => n.charAt(0).toUpperCase()).join('');
-        return initials.slice(0, 2);
+    // Si le nom est absent ou déjà sous forme d'initiales (2 lettres), on prend l'email
+    if (!name || name.length === 2) {
+        if (email) {
+            return email.substring(0, 2).toUpperCase();
+        }
+        return '';
     }
-    if (email) {
-        return email.substring(0, 2).toUpperCase();
-    }
-    return '';
+    // Sinon, on génère les initiales à partir du nom
+    const names = name.split(' ');
+    const initials = names.map((n) => n.charAt(0).toUpperCase()).join('');
+    return initials.slice(0, 2);
 };
 
 /**

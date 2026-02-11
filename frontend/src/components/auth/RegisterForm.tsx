@@ -7,6 +7,7 @@ import Alert from '@/components/ui/Alert';
 import Button from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
 
+
 export default function RegisterForm() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -21,7 +22,6 @@ export default function RegisterForm() {
         e.preventDefault();
         setErrors([]);
 
-        // Pour l'inscription simple (sans confirmation), on passe le même mot de passe
         const validationErrors = validateRegisterForm(email, password, password);
         if (validationErrors.length > 0) {
             setErrors(validationErrors);
@@ -49,6 +49,7 @@ export default function RegisterForm() {
                     />
                 </div>
             )}
+
 
             <form onSubmit={handleSubmit} className="space-y-5">
                 <Input

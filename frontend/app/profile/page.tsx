@@ -26,7 +26,11 @@ interface FormData {
 
 /** Parse le nom complet en prénom et nom */
 function parseUserName(fullName?: string | null): { firstName: string; lastName: string } {
-    const nameParts = fullName?.split(' ') || ['', ''];
+    // Si le nom est absent ou correspond à deux lettres (initiales auto), on ne remplit pas le prénom
+    if (!fullName || fullName.length === 2) {
+        return { firstName: '', lastName: '' };
+    }
+    const nameParts = fullName.split(' ');
     return {
         firstName: nameParts[0] || '',
         lastName: nameParts.slice(1).join(' ') || '',
@@ -145,7 +149,9 @@ export default function ProfilePage() {
                     {/* En-tête */}
                     <div className="mb-8 sm:mb-12">
                         <h1 className="text-xl sm:text-2xl font-heading font-semibold text-heading">Mon compte</h1>
-                        <p className="mt-1 font-body text-sub">{getDisplayName(user.name, user.email)}</p>
+                                                {!(user.name && user.name.length === 2) && (formData.firstName || formData.lastName) ? (
+                                                    <p className="mt-1 font-body text-sub">{getDisplayName(user.name, user.email)}</p>
+                                                ) : null}
                     </div>
 
                     {/* Messages de feedback */}

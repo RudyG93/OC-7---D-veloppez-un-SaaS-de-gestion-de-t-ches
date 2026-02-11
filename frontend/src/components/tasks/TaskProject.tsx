@@ -63,7 +63,7 @@ export default function TaskProject({
                     {task.dueDate && (
                         <div className="flex items-center gap-2 text-sm font-body text-heading mb-8">
                             <span>Échéance :</span>
-                            <Image src="/ico-date.png" alt="" width={16} height={16} aria-hidden="true" />
+                            <Image src="/ico-date.png" alt="" width={16} height={16} aria-hidden="true" style={{ width: 'auto', height: 'auto' }} />
                             <span>{formatDate(task.dueDate)}</span>
                         </div>
                     )}

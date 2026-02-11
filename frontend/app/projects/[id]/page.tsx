@@ -155,8 +155,8 @@ export default function ProjectDetailPage() {
         <div className="flex flex-col sm:flex-row items-start gap-4 mb-8">
           {/* Bouton retour */}
           <Link href="/projects" className="group shrink-0 p-2 hover:bg-background rounded-full transition-colors">
-            <Image src="/back.png" alt="Retour à la liste des projets" width={50} height={50} className="group-focus-visible:hidden" />
-            <Image src="/back-focus.png" alt="" width={50} height={50} className="hidden group-focus-visible:block" aria-hidden="true" />
+            <Image src="/back.png" alt="Retour à la liste des projets" width={50} height={50} className="group-focus-visible:hidden" style={{ height: 'auto' }} />
+            <Image src="/back-focus.png" alt="" width={50} height={50} className="hidden group-focus-visible:block" aria-hidden="true" style={{ height: 'auto' }} />
           </Link>
 
           {/* Titre, actions et description */}
@@ -188,7 +188,7 @@ export default function ProjectDetailPage() {
                 Créer une tâche
               </Button>
               <Button onClick={() => setShowTaskIAModal(true)} variant="orange" size="proj">
-                <Image src="/ico-star-ia.png" alt="" width={16} height={16} />
+                <Image src="/ico-star-ia.png" alt="" width={16} height={16} style={{ height: 'auto' }} />
                 IA
               </Button>
             </div>

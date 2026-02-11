@@ -72,7 +72,7 @@ const sizeStyles: Record<ButtonSize, string> = {
  *   variant="primary"
  *   isLoading={isSubmitting}
  *   loadingText="Création..."
- *   leftIcon={<Image src="/ico-plus.png" alt="" width={16} height={16} />}
+ *   leftIcon={<Image src="/ico-plus.png" alt="" width={16} height={16} style={{ height: 'auto' }} />}
  * >
  *   Créer
  * </Button>

@@ -63,7 +63,7 @@ export default function ProjectCard({ project, user }: ProjectCardProps) {
 
             {/* Équipe */}
             <div className="flex items-center gap-2 mb-4">
-                <Image src="/ico-team.png" alt="" width={16} height={16} aria-hidden="true" />
+                <Image src="/ico-team.png" alt="" width={16} height={16} aria-hidden="true" style={{ height: 'auto' }} />
                 <span className="text-sm font-body text-sub">
                     Équipe ({(project.members?.length ?? 0) + 1})
                 </span>
